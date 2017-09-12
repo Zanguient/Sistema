@@ -1,0 +1,73 @@
+  TO-DO
+
+  - Abre tela busca grupos pelo f3 
+  - tela busca grupos abrir centralizada
+  - 
+  -
+
+
+  - Opção de copiar img para pasta do sistema config. gerais;
+  - Mudar Edit busca Imagem no Cadastro Produto;
+  - Criar botão de duplicar cadastro;
+  - Obs...
+    1- Campos de Busca, ex. Busca Cidade, Busca Cliente, etc. podem ser DBAware. Depois que tiverem seus valores modificados, fazer update no Campo e dar Refresh na Query
+    2- Para realizar Select's de cadastros, etc. Fazer com CachedUpdates para diminuir o tráfego na rede. (Mantém dados do Select na memória e ao fazer Update/Insert, etc. 
+  		Abre nova conexão com DataBase;
+    3- Para Realizar Controle de Transaction em Código, deve-se desabilitar a opção de Abrir Transaction Automaticamente no DataSet;
+
+  - Mudar projeto para trabalhar com MDI
+	- Criar Qry e TranscUpdate&Insert em tempo de Exec; TransRead uma unica para todo o proj
+  - Abrir tela TrocaOperador em qualquer Form do sistema
+  - Criar Unit para armazenar funcoes genericas, como> SetLogoPrincipal, etc. ExUnt> Unt_FrmMyStrings. Criar ela junto com a Unt_DM
+  - Verificar Todas as transações dos forms
+
+  - Criar tela de busca genérica e tela de cadastro de cliente
+  - Mudar todos os btn do FrmPrincipal para ActionList
+  - Add img botão cadProduto
+  - Fazer validacao CNPJ e IE das Config e CadCliente  
+  - Add tela de fundo tela principal
+  - Add Enquadramento no CadCliente
+  - Criar Unt_FrmConfigGeral
+    - Add Opção de inserir logo na tela principal
+    - Add opção de mudar o tema da aplicação 
+  - Deletar Unt's de validação 
+  - Acertar Sit. Trib. Para preencher CST/CSOSN   
+  - Criar tela de cadastro de Produtos
+    - Criar cadastro de Grupo
+    - Criar cadastro de SubGrupo
+    - Criar tela de ajuste de estoque
+  - Criar Listagem de produtos  
+  - Mudar nome da Unit_Funcoes para Unt_Funcoes  
+  - Criar Tela de vendas - PDV
+  - Criar Query FibPlus em tempo de execucao
+  - No campo Cep do CadCliente, buscar o cep do cadastro do cliente, caso não tenha buscar o da cidade;
+  - Buscador está com o contador de registros errado. Só conta até 11;
+  - Validar CPF/CNPJ ao gravar;
+  - Verificar necessidade de maskEdit 
+  - Mudar Btn's para ActionList
+  - Exibir se o cliente está ativo no Frm_BuscaCliente
+  - Ao clicar na coluna, mudar ordem dos dados do buscador
+  - Colocar mascara telefone na listagem
+  - Ajustar para exibir '-' ao invés de ',' na separação cidade e UF nas listagens e rel
+  - Austar campo endereço, colocar espaço antes do número na listagem
+  - Att SQL gerado no SQL Generator para colocar alias
+  - Criar Unt_Dados para armazenar dados da empresa
+  - Não aparecer msg de CapsLoock Ativo;
+  - Verificar se os Forms estão usando FoneR ou Celular do cliente;
+  - Colocar cor de fundo nos speedButtons para fica visivel na programação dos Forms
+  - Mudar nomes dos das Unit para Unt_Frm... e dos forms de Form para Frm_...
+  - Ajustar Labels dos Forms
+  - Trocar componente ACBr Validador por unit especifica. Exemplo: Ao invés de usar todas as Unit do Componente de Validação, usar somente aquelas que fazem a validação do CPF/CNPJ. Usar ela dentro     da Unt_Funcoes
+  - Criar FrameWork para o panel de Btn's.
+
+  - SGBD
+    - Criar ferramenta para conversão de banco de dados
+
+
+  RELEASE
+ 
+  - New: Criado Relatório de Clientes Agrupado por cidade/UF, por Cidade, por UF e outro somente para listagem
+  - New: Implementado serviço de backup e otimização da base de dados dentro do sistema
+  - New: Criado tela de Busca de Produtos
+  - Ajuste: Adicionado filtro de data do cadastro do cliente na Listagem de Clientes
+  - Ajuste: Melhorado busca de cliente pelo filtro de código e cidade. Agora é possível buscar vários de uma vez usando vírgula para separar os códigos

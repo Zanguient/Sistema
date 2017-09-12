@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<RadStudioObjectRepository Version="1.0">
+  <Creators>
+    <Creators CreatorIDString="ProjectRepositoryCreator"/>
+    <Creators CreatorIDString="ProjectTemplateCreator"/>
+    <Creators CreatorIDString="BorlandDelphiRepositoryCreator"/>
+    <Creators CreatorIDString="DelphiProjectRepositoryCreator"/>
+    <Creators CreatorIDString="SourceCreator"/>
+  </Creators>
+  <Items>
+    <Item IDString="C:\Users\DS14\Documents\Embarcadero\Studio\Projects\Demo_CopyForm\Unt_FrmBuscaGenerica" CreatorIDString="BorlandDelphiRepositoryCreator">
+      <Name Value="FrmBuscaGen"/>
+      <Icon Value=""/>
+      <Description Value=""/>
+      <Author Value=""/>
+      <Personality Value="Delphi.Personality"/>
+      <Platforms Value=""/>
+      <Frameworks Value="VCL"/>
+      <Identities Value="RADSTUDIO"/>
+      <Categories>
+        <Category Value="Borland.Delphi.NewFiles" Parent="Borland.Delphi.New">Delphi Files</Category>
+        <Category Value="Borland.Delphi.New" Parent="Borland.Root">Delphi Projects</Category>
+      </Categories>
+      <Type Value="FormTemplate"/>
+      <Ancestor Value=""/>
+      <FormName Value=""/>
+      <Designer Value="Any"/>
+    </Item>
+  </Items>
+</RadStudioObjectRepository>
