@@ -25,15 +25,15 @@ type
     procedure DataModuleDestroy(Sender: TObject);
 
   private
-    { Private declarations }
+
   public
     { Public declarations }
     procedure ConectarDB;
-    procedure CriarINI;
     procedure DesconectarDB;
     procedure PreencheDadosEmpresa;
     procedure SetOperadorLogado(cod, nome: String);
     procedure setTemaPrincipal(tema: String);
+    function CriaArqINI: Boolean;
     function VerificaOperador(pCod: String; pSenha: String): Integer;
     function GetIP: String;
     function GetServerName: String;
@@ -208,24 +208,33 @@ begin
   end;
 end;
 
-procedure Tdm.CriarINI;
+//------------------------------------------
+function Tdm.CriaArqINI: Boolean;
 begin
   pathIni := pathConfig + '\LinSoft.ini';
 
   if not fileexists(pathIni) then begin
     with TIniFile.Create(pathIni) do begin
-      WriteString('CONEXAO', 'ServerIP', GetIP);
-      WriteString('CONEXAO', 'ServerName', GetServerName);
-      WriteString('CONEXAO', 'DB', pathDB + '\DATABASE.FDB');
-      WriteString('CONEXAO', 'ConectarPorIP', 'True');
+      try
+        WriteString('CONEXAO', 'ServerIP', GetIP);
+        WriteString('CONEXAO', 'ServerName', GetServerName);
+        WriteString('CONEXAO', 'DB', pathDB + '\DATABASE.FDB');
+        WriteString('CONEXAO', 'ConectarPorIP', 'True');
+        Result := True;
+      except
+        on E: Exception do begin
+          ShowMessage('Ocorreu erro ao gravar arquivo INI ' + #13 + 'ERRO: ' + E.Message);
+        end;
+      end;
     end;
-  end;
-
+  end
 end;
 
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
-  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown := True; //Listen to Memory Leaks
+
+
 
   pathSistema := 'C:\Users\' + GetUsuarioLogado + '\Documents\LinSoft';
   pathBin := pathSistema + '\Bin';
@@ -247,9 +256,8 @@ begin
   ListaQuery := TObjectList<TpFIBQuery>.Create;
   TotalQuery := 0;
 
-  CriarINI;
+  if not (CriaArqINI) then Exit;
   ConectarDB;
-
   PreencheDadosEmpresa;
   setTemaPrincipal(getNomeTemaPeloIndx(tipoTemaEmpresa));
 end;

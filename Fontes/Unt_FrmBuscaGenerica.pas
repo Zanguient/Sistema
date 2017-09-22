@@ -30,34 +30,27 @@ type
     btnSelecionar: TBitBtn;
 
     edtBusca: TEdit;
-
-    actMan: TActionManager;
-    actAtualizar: TAction;
-    actLimpar: TAction;
-    actCancelar: TAction;
-    actSelecionar: TAction;
-    actBuscar: TAction;
-    actCut: TEditCut;
-    actCopy: TEditCopy;
-    actPaste: TEditPaste;
-    actSelectAll: TEditSelectAll;
-    actUndo: TEditUndo;
-    actDel: TEditDelete;
+    dsBusca: TDataSource;
 
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure edtBuscaKeyPress(Sender: TObject; var Key: Char);
     procedure btnBuscaClick(Sender: TObject);
+    procedure btnAtualizarClick(Sender: TObject);
+    procedure btnLimparClick(Sender: TObject);
 
     private
-      FTipoCadBusca: TBusca;
+      FCodField: String;
+      FNomeField: String;
+      FNomeTable: String;
 
-      procedure preencheDbg(fields: Array of String);
+      procedure PreencheDbgBusca(CodField, NomeField, NomeTable: String);
 
     public
-      Function buscar(filtro: String): Boolean;
-      Constructor Create(pCadBusca: TBusca; filtro: String = '');
+      Constructor Create(CodField, NomeField, NomeTable: String; filtro: String = '');
+      Function Buscar(Filtro: String): Boolean;
 
-    published
-      Property TipoCadBusca: TBusca write FTipoCadBusca;
 
   end;
 
@@ -72,95 +65,116 @@ Uses
 
 {$R *.dfm}
 
-procedure TFrm_BuscaGen.btnBuscaClick(Sender: TObject);
+constructor TFrm_BuscaGen.Create(CodField, NomeField, NomeTable: String; filtro: String = '');
 begin
-  buscar(edtBusca.Text);
+  FCodField := CodField;
+  FNomeField := NomeField;
+  FNomeTable := NomeTable;
+  edtBusca.Text := filtro;
 end;
 
-function TFrm_BuscaGen.buscar(filtro: String): Boolean;
+procedure TFrm_BuscaGen.edtBuscaKeyPress(Sender: TObject; var Key: Char);
+var
+  i: Integer;
 begin
-  try
-    if (FTipoCadBusca = TBusca.Operador) then begin
-      with getNewQuery(False) do begin
-        try
-          Close;
-          SQL.Clear;
+  if (Key = #13) then
+  begin
+    Key := #0;
+    Buscar(edtBusca.Text);
+    Exit;
+  end;
 
-          SQL.Add('SELECT');
-          SQL.Add('V.COD_VENDEDOR,');
-          SQL.Add('V.NOME_VENDEDOR,');
-          SQL.Add('CASE (V.STATUS_VENDEDOR)');
-          SQL.Add('WHEN ''A'' THEN ''ATIVO''');
-          SQL.Add('WHEN ''I'' THEN ''INATIVO''');
-          SQL.Add('ELSE ''DESCONHECIDO''');
-          SQL.Add('END AS STATUS');
-          SQL.Add('FROM VENDEDORES V');
+  if Length(Trim(EdtBusca.Text)) = 0 then
+  begin
+    if not (Key in ['0' .. '9']) then rbgFiltro.ItemIndex := 1
+    else rbgFiltro.ItemIndex := 0;
+    Exit;
+  end;
 
-          if not (filtro.IsEmpty) then begin
-            if (rbgFiltro.ItemIndex = 0) then begin
-              Conditions.AddMyCondition('COD_VENDEDOR', Format('V.COD_VENDEDOR = %d', [StrToInt(filtro)]))
-            end else if (rbgFiltro.ItemIndex = 1) then begin
-              Conditions.AddMyCondition('NOME_VENDEDOR', Format('V.NOME_VENDEDOR = %%s%', [filtro]));
-            end;
-          end;
-
-          ExecQuery;
-
-          if (RecordCount <= 0) then Exit;
-
-//          PreencheDbg(
-//            FieldByName('COD_VENDEDOR').AsString,
-//            FieldByName('COD_VENDEDOR').AsString,
-//            FieldByName('COD_VENDEDOR').AsString,
-//            FieldByName('COD_VENDEDOR').AsString,
-//            );
-
-
-        except
-          on e: Exception do begin
-            Transaction.Rollback;
-            raise Exception.Create('Erro ao efetuar Busca #13 ERRO: ' + e.Message);
-          end;
-        end;
+  if Length(Trim(EdtBusca.Text)) > 0 then
+  begin
+    if (rbgFiltro.ItemIndex = 0) then
+    begin
+      for i := 1 to Length(Trim(EdtBusca.Text)) do
+      begin
+        if not(EdtBusca.Text[i] in ['0' .. '9']) then rbgFiltro.ItemIndex := 1;
       end;
     end;
-  except
-    on e: Exception do begin
-      MsgErro(e.Message);
+  end;
+end;
+
+procedure TFrm_BuscaGen.btnAtualizarClick(Sender: TObject);
+begin
+  btnBusca.Click;
+end;
+
+procedure TFrm_BuscaGen.btnBuscaClick(Sender: TObject);
+begin
+  Buscar(edtBusca.Text);
+end;
+
+procedure TFrm_BuscaGen.btnLimparClick(Sender: TObject);
+begin
+  edtBusca.Text := '';
+  DBGrid1.DataSource.DataSet.Close;
+end;
+
+function TFrm_BuscaGen.Buscar(Filtro: String): Boolean;
+begin
+  with getNewQuery() do begin
+    try
+      Close;
+      SQL.Clear;
+      Conditions.Clear;
+
+      SQL.Add('SELECT');
+      SQL.Add(Format('%S, ', [FCodField]));
+      SQL.Add(Format('%S ', [FNomeField]));
+      SQL.Add(Format('FROM %S', [FNomeTable]));
+
+      if (rbgFiltro.ItemIndex = 0) then begin
+        Conditions.AddMyCondition('CodField', Format('%S = %D', [FCodField, StrtoIntDef(EdtBusca.Text, 0)]));
+      end else if (rbgFiltro.ItemIndex = 1) then begin
+        Conditions.AddMyCondition('NomeField', Format('%S LIKE %S%S%S', [FNomeField, '%', FNomeField, '%']));
+      end;
+
+      Conditions.Apply;
+      ExecQuery;
+
+      if (RecordCount <= 0) then Exit;
+      PreencheDbgBusca(FieldByName(FCodField), FieldByName(FNomeField), FieldByName(FNomeTable));
+
+    except
+      on e: Exception do begin
+        Transaction.Rollback;
+        ShowMessage('Erro ao efetuar Busca' + #13 + 'ERRO: ' + e.Message);
+      end;
     end;
   end;
 end;
 
-constructor TFrm_BuscaGen.Create(pCadBusca: TBusca; filtro: String = '');
+procedure TFrm_BuscaGen.FormCreate(Sender: TObject);
 begin
-  if not (filtro.IsEmpty) then begin
-    edtBusca.Text := filtro;
-  end;
-  FTipoCadBusca := pCadBusca;
+  rbgFiltro.ItemIndex := 1;
 end;
 
 procedure TFrm_BuscaGen.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (Key = VK_ESCAPE) then begin
-    Close;
-  end else if (Key = VK_F5) then begin
-    btnAtualizar.Click;
-  end;
+  if (Key = VK_ESCAPE) then Close
+  else if (Key = VK_F5) then btnAtualizar.Click;
 end;
 
-procedure TFrm_BuscaGen.preencheDbg(fields: array of String);
-var
-  I: Integer;
+procedure TFrm_BuscaGen.FormShow(Sender: TObject);
 begin
-  if (FTipoCadBusca = TBusca.Operador) then begin
-    for I := 0 to Length(fields) do begin
-      if (fields[i].Equals('COD_VENDEDOR')) then begin
-        DBGrid1.Columns.Add();
+  if not (Trim(edtBusca.Text) = '') then btnBusca.Click;
+end;
 
-
-      end;
-    end;
-  end;
+procedure TFrm_BuscaGen.PreencheDbgBusca(CodField, NomeField, NomeTable: String);
+begin
+  DBGrid1.Columns.Add();
+  DBGrid1.Columns.Add();
+  DBGrid1.fields[0].DisplayLabel := 'Código';
+  DBGrid1.fields[1].DisplayLabel := 'Operador';
 end;
 
 end.

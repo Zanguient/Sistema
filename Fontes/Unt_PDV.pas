@@ -252,23 +252,22 @@ begin
 end;
 
 procedure TFrm_PDV.btnGetOperadorClick(Sender: TObject);
+var FrmBuscaGen: TFrm_BuscaGen;
 begin
   with (Frm_BuscaGen) do begin
     try
       Application.CreateForm(TFrm_BuscaGen, Frm_BuscaGen);
-      Create(TBusca.Operador);
+      Create('COD_VENDEDOR', 'NOME_VENDEDOR', 'VENDEDORES', 'filtro');
       ShowModal;
-
       if (ModalResult = mrOk) then begin
-        ShowMessage('Ok Btn Clicked!');
+
       end else begin
-        ShowMessage('Cancel/Close Btn Clicked!');
+
       end;
     finally
       FreeAndNil(Frm_BuscaGen);
     end;
   end;
-
 end;
 
 procedure TFrm_PDV.FdQueryPDVID_PRODUTOGetText(Sender: TField; var Text: string;

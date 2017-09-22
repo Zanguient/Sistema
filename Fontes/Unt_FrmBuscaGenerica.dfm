@@ -14,7 +14,9 @@ object Frm_BuscaGen: TFrm_BuscaGen
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBotton: TPanel
@@ -40,7 +42,6 @@ object Frm_BuscaGen: TFrm_BuscaGen
         Top = 3
         Width = 100
         Height = 29
-        Action = actCancelar
         Align = alRight
         Caption = 'Cancelar'
         Kind = bkCancel
@@ -53,7 +54,6 @@ object Frm_BuscaGen: TFrm_BuscaGen
         Top = 3
         Width = 100
         Height = 29
-        Action = actSelecionar
         Align = alRight
         Caption = 'Selecionar'
         Glyph.Data = {
@@ -93,6 +93,7 @@ object Frm_BuscaGen: TFrm_BuscaGen
       Width = 625
       Height = 259
       Align = alClient
+      DataSource = dsBusca
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -124,7 +125,6 @@ object Frm_BuscaGen: TFrm_BuscaGen
         Top = 3
         Width = 100
         Height = 29
-        Action = actAtualizar
         Align = alLeft
         Caption = 'Atualizar'
         Glyph.Data = {
@@ -146,6 +146,7 @@ object Frm_BuscaGen: TFrm_BuscaGen
           0000}
         NumGlyphs = 2
         TabOrder = 0
+        OnClick = btnAtualizarClick
       end
       object btnLimpar: TBitBtn
         AlignWithMargins = True
@@ -153,7 +154,6 @@ object Frm_BuscaGen: TFrm_BuscaGen
         Top = 3
         Width = 100
         Height = 29
-        Action = actLimpar
         Align = alLeft
         Cancel = True
         Caption = 'Limpar'
@@ -176,6 +176,7 @@ object Frm_BuscaGen: TFrm_BuscaGen
           0000}
         NumGlyphs = 2
         TabOrder = 1
+        OnClick = btnLimparClick
       end
     end
   end
@@ -211,6 +212,7 @@ object Frm_BuscaGen: TFrm_BuscaGen
       Height = 21
       Align = alClient
       TabOrder = 0
+      OnKeyPress = edtBuscaKeyPress
     end
   end
   object rbgFiltro: TRadioGroup
@@ -226,70 +228,8 @@ object Frm_BuscaGen: TFrm_BuscaGen
       'Nome')
     TabOrder = 4
   end
-  object actMan: TActionManager
-    Left = 513
-    Top = 337
-    StyleName = 'Platform Default'
-    object actAtualizar: TAction
-      Category = 'Busca'
-      Caption = 'Atualizar'
-      ShortCut = 116
-    end
-    object actLimpar: TAction
-      Category = 'Busca'
-      Caption = 'Limpar'
-    end
-    object actCancelar: TAction
-      Category = 'Busca'
-      Caption = 'Cancelar'
-    end
-    object actSelecionar: TAction
-      Category = 'Busca'
-      Caption = 'Selecionar'
-    end
-    object actBuscar: TAction
-      Category = 'Busca'
-    end
-    object actCut: TEditCut
-      Category = 'Edit'
-      Caption = 'Cu&t'
-      Hint = 'Cut|Cuts the selection and puts it on the Clipboard'
-      ImageIndex = 0
-      ShortCut = 16472
-    end
-    object actCopy: TEditCopy
-      Category = 'Edit'
-      Caption = '&Copy'
-      Hint = 'Copy|Copies the selection and puts it on the Clipboard'
-      ImageIndex = 1
-      ShortCut = 16451
-    end
-    object actPaste: TEditPaste
-      Category = 'Edit'
-      Caption = '&Paste'
-      Hint = 'Paste|Inserts Clipboard contents'
-      ImageIndex = 2
-      ShortCut = 16470
-    end
-    object actSelectAll: TEditSelectAll
-      Category = 'Edit'
-      Caption = 'Select &All'
-      Hint = 'Select All|Selects the entire document'
-      ShortCut = 16449
-    end
-    object actUndo: TEditUndo
-      Category = 'Edit'
-      Caption = '&Undo'
-      Hint = 'Undo|Reverts the last action'
-      ImageIndex = 3
-      ShortCut = 16474
-    end
-    object actDel: TEditDelete
-      Category = 'Edit'
-      Caption = '&Delete'
-      Hint = 'Delete|Erases the selection'
-      ImageIndex = 5
-      ShortCut = 46
-    end
+  object dsBusca: TDataSource
+    Left = 440
+    Top = 157
   end
 end
