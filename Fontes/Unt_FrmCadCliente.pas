@@ -455,7 +455,7 @@ begin
   if retorno <> '' then begin
     EdtCod.Text := retorno;
     EdtCod.SelectAll;
-    findCod(Unt_FrmBuscaCliente.retorno);
+    findCod(FormBuscador.Retorno.Cod);
   end;
 end;
 

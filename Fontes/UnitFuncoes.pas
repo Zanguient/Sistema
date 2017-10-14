@@ -9,9 +9,15 @@ uses Vcl.Forms, Grids, DBGrids, Winapi.Messages, Winapi.Windows, System.SysUtils
 type
   TTipoMsg = (tMsgErroPK, tMsgDelBtn, tMsgCloseFrm, tMsgCancBtn, tMsgCampoBranco, tMsgCampObrig);
 
+type MyMessages = record
+  public
+    function MsgErro1(Msg: String): Boolean;
+end;
+
 procedure AutoSizeDBGrid(const xDBGrid: TDBGrid);
 procedure FocarComponente(pFrm: TForm);
 procedure LimpaCampos(pFrm: TForm);
+procedure MudaCorEditReadOnly(CorReadOnly: TColor; CorTxtReadOnly: TColor; EditArray: Array of TEdit);
 
 function MsgCompleta(Msg, Title, MsgBtn1, MsgBtn2: String; tipoAction: TTaskDialogIcon; temBeep, repetir: Boolean): Boolean;
 function MsgFixa(tipoMsg: TTipoMsg; msg : String = ''): Boolean;
@@ -21,6 +27,7 @@ function MsgAviso(Msg: String): Boolean;
 function MsgBoxLoop(msg, title: String): Boolean;
 
 function Remove_Char_Especial(texto: string): string; stdcall;
+function RemoveAcentos(Str: string): string;
 function RemoverZeros(S: String): String;
 Function RemovePonto(S: String): String;
 
@@ -36,10 +43,29 @@ function FormataCEP(cep: String): string;
 function FormataPalavra(palavra: String): string;
 function FormataData(data: String): String;
 
+function Msg: MyMessages;
+
+
 implementation
 
 Uses
   ACBrValidador;
+
+function Msg: MyMessages;
+  var m: MyMessages;
+begin
+  result := m;
+end;
+
+procedure MudaCorEditReadOnly(CorReadOnly: TColor; CorTxtReadOnly: TColor; EditArray: Array of TEdit);
+var
+  I: Integer;
+begin
+  for I := 0 to Length(EditArray)-1 do begin
+    EditArray[i].Color := CorReadOnly;
+    EditArray[i].Font.Color := CorTxtReadOnly;
+  end;
+end;
 
 function FormataPalavra(palavra: String): string;
 var
@@ -154,6 +180,21 @@ begin
 
     else
       result := result + texto[x];
+end;
+
+function RemoveAcentos(Str: string): string;
+Const
+  ComAcento = '‡‚ÍÙ˚„ı·ÈÌÛ˙Á¸¿¬ ‘€√’¡…Õ”⁄«‹';
+  SemAcento = 'aaeouaoaeioucuAAEOUAOAEIOUCU';
+Var
+  x : Integer;
+Begin
+  For x := 1 to Length(Str) do begin
+    if Pos(Str[x], ComAcento) <> 0 Then begin
+      Str[x] := SemAcento[Pos(Str[x],ComAcento)];
+    end;
+  end;
+  Result := Str;
 end;
 
 Function RemovePonto(S: String): String;
@@ -344,6 +385,13 @@ begin
   data := Trim(Remove_Char_Especial(data));
   if Length(data) = 0 then Result := ''
   else Result := FormatMaskText('00.00.0000;0', data);
+end;
+
+{ MyMessages }
+
+function MyMessages.MsgErro1(Msg: String): Boolean;
+begin
+  MsgErro(Msg);
 end;
 
 end.

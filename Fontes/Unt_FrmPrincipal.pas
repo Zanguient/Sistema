@@ -156,7 +156,7 @@ begin
     with Unt_FrmBuscaCliente.FormBuscador do begin
       if (FormBuscador = nil) then Application.CreateForm(TFormBuscador, FormBuscador);
       ShowModal();
-      if FormBuscador.ModalResult = mrOk then Result := Unt_FrmBuscaCliente.retorno.ToString;
+      if FormBuscador.ModalResult = mrOk then Result := retorno.Cod.ToString;
     end;
   finally
     FreeAndNil(FormBuscador);
@@ -170,7 +170,7 @@ begin
     with Unt_FrmBuscaProduto.Frm_BuscaProduto do begin
       if (Frm_BuscaProduto = nil) then Application.CreateForm(TFrm_BuscaProduto, Frm_BuscaProduto);
       ShowModal();
-      if Frm_BuscaProduto.ModalResult = mrOk then Result := Unt_FrmBuscaProduto.retorno.ToString;
+      if Frm_BuscaProduto.ModalResult = mrOk then Result := retorno.Cod.ToString;
     end;
   finally
     FreeAndNil(Frm_BuscaProduto);

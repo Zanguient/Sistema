@@ -65,7 +65,7 @@ object Frm_principal: TFrm_principal
         Left = 319
         Top = 0
         Width = 167
-        Height = 27
+        Height = 18
         Margins.Left = 35
         Margins.Top = 0
         Margins.Right = 0
@@ -81,14 +81,13 @@ object Frm_principal: TFrm_principal
         ParentBiDiMode = False
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
       end
       object LbContato: TLabel
         AlignWithMargins = True
         Left = 5
         Top = 0
         Width = 111
-        Height = 27
+        Height = 18
         Margins.Left = 5
         Margins.Top = 0
         Margins.Right = 0
@@ -102,14 +101,13 @@ object Frm_principal: TFrm_principal
         Font.Style = [fsBold]
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
       end
       object lbSite: TLabel
         AlignWithMargins = True
         Left = 151
         Top = 0
         Width = 133
-        Height = 27
+        Height = 18
         Cursor = crHandPoint
         Margins.Left = 35
         Margins.Top = 0
@@ -128,7 +126,6 @@ object Frm_principal: TFrm_principal
         OnClick = lbSiteClick
         OnMouseEnter = lbSiteMouseEnter
         OnMouseLeave = lbSiteMouseLeave
-        ExplicitHeight = 18
       end
     end
     object PnlEmpresa: TPanel
@@ -466,7 +463,7 @@ object Frm_principal: TFrm_principal
         Left = 81
         Top = 0
         Width = 4
-        Height = 20
+        Height = 14
         Margins.Right = 0
         Align = alLeft
         Alignment = taCenter
@@ -478,7 +475,6 @@ object Frm_principal: TFrm_principal
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 14
       end
     end
     object pnThird: TPanel

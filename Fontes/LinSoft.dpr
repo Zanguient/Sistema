@@ -9,7 +9,6 @@ uses
   Vcl.Styles,
   Unt_FrmRelListaClientes in 'Unt_FrmRelListaClientes.pas' {Frm_RelListaClientes},
   Unt_FrmListaClientes in 'Unt_FrmListaClientes.pas' {FormListClientes},
-  Unt_FrmBuscaProduto in 'Unt_FrmBuscaProduto.pas' {Frm_BuscaProduto},
   Unt_FrmCadCliente in 'Unt_FrmCadCliente.pas' {FormCadastroCliente},
   Unt_FrmBuscaCidade in 'Unt_FrmBuscaCidade.pas' {Frm_BuscaCidade},
   Unt_FrmConfigGeral in 'Unt_FrmConfigGeral.pas' {Frm_ConfigGeral},
@@ -32,7 +31,8 @@ uses
   UnitConstants in 'UnitConstants.pas',
   Unt_PDV in 'Unt_PDV.pas' {Frm_PDV},
   UnitFuncoes in 'UnitFuncoes.pas' {$R *.res},
-  Unt_FrmBuscaGenerica in 'Unt_FrmBuscaGenerica.pas' {Frm_BuscaGen};
+  Unt_FrmBuscaGenerica in 'Unt_FrmBuscaGenerica.pas' {Frm_BuscaGen},
+  Unt_FrmBuscaOperador in 'Unt_FrmBuscaOperador.pas' {Frm_BuscaOperador};
 
 {$R *.res}
 

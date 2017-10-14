@@ -45,7 +45,7 @@ type
       FNomeField: String;
       FNomeTable: String;
 
-      procedure PreencheDbgBusca(CodField, NomeField, NomeTable: String);
+      procedure PreencheDbgBusca(CodField, NomeField: String);
 
     public
       Constructor Create(CodField, NomeField, NomeTable: String; filtro: String = '');
@@ -123,6 +123,13 @@ function TFrm_BuscaGen.Buscar(Filtro: String): Boolean;
 begin
   with getNewQuery() do begin
     try
+      {
+        REALIZA BUSCA GENÉRICA
+        HOJE SÓ BUSCA OS CAMPOS COD E NOME DE UMA TABELA, PORÉM FUTURAMENTE DÁ PARA ADICIONAR
+        MAIS CAMPOS E TRATÁ-LOS CAMPO FIELD1, FIELD2,... OU AINDA PREPARAR O SQL E MANDAR ELE PRONTO PARA
+        ESSA FUNÇÃO
+      }
+
       Close;
       SQL.Clear;
       Conditions.Clear;
@@ -132,17 +139,19 @@ begin
       SQL.Add(Format('%S ', [FNomeField]));
       SQL.Add(Format('FROM %S', [FNomeTable]));
 
-      if (rbgFiltro.ItemIndex = 0) then begin
-        Conditions.AddMyCondition('CodField', Format('%S = %D', [FCodField, StrtoIntDef(EdtBusca.Text, 0)]));
-      end else if (rbgFiltro.ItemIndex = 1) then begin
-        Conditions.AddMyCondition('NomeField', Format('%S LIKE %S%S%S', [FNomeField, '%', FNomeField, '%']));
+      if not (Trim(edtBusca.Text).IsEmpty) then begin
+        if (rbgFiltro.ItemIndex = 0) then begin
+          Conditions.AddMyCondition('CodField', Format('%S = %D', [FCodField, StrtoIntDef(EdtBusca.Text, 0)]));
+        end else if (rbgFiltro.ItemIndex = 1) then begin
+          Conditions.AddMyCondition('NomeField', Format('%S LIKE ''%S%S%S''', [FNomeField, '%', FNomeField, '%']));
+        end;
+        Conditions.Apply;
       end;
 
-      Conditions.Apply;
       ExecQuery;
 
-      if (RecordCount <= 0) then Exit;
-      PreencheDbgBusca(FieldByName(FCodField), FieldByName(FNomeField), FieldByName(FNomeTable));
+      if (RecordCount > 0) then
+        PreencheDbgBusca(FieldByName(FCodField).AsString, FieldByName(FNomeField).AsString);
 
     except
       on e: Exception do begin
@@ -169,12 +178,20 @@ begin
   if not (Trim(edtBusca.Text) = '') then btnBusca.Click;
 end;
 
-procedure TFrm_BuscaGen.PreencheDbgBusca(CodField, NomeField, NomeTable: String);
+procedure TFrm_BuscaGen.PreencheDbgBusca(CodField, NomeField: String);
 begin
+  {
+    PARAM1: ARRAY OF STRINGS PARA O NOME DAS COLUNAS
+    PARAM2: DATASET COM OS VALORES DOS FIELDS
+    OBS> MUDAR NOME DA PROC PARA PreencheDBGBusca(PFields: Array of Strings; PDataSet: TpFibDataSet);
+    OBS2> MUDAR NOME DBG PARA DBGBusca
+  }
+
   DBGrid1.Columns.Add();
+  DBGrid1.Columns[0].Title.Caption := CodField;
+
   DBGrid1.Columns.Add();
-  DBGrid1.fields[0].DisplayLabel := 'Código';
-  DBGrid1.fields[1].DisplayLabel := 'Operador';
+  DBGrid1.Columns[1].Title.Caption := NomeField;
 end;
 
 end.

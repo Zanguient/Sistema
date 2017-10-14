@@ -60,19 +60,26 @@ type
     procedure DbgBuscaProdutoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure BtnSelecionarClick(Sender: TObject);
     procedure BtnCancelarClick(Sender: TObject);
-    procedure QryBuscaProdutoCSTGetText(Sender: TField; var Text: string;
-      DisplayText: Boolean);
+    procedure QryBuscaProdutoCSTGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure FormShow(Sender: TObject);
 
   private
-    { Private declarations }
     procedure RetornoForm(encontrou: Boolean = True);
+    procedure AjustaFiltro();
+
   public
-    { Public declarations }
+    type RetornoConsulta = record
+        Cod: Integer;
+        Nome: String;
+      end;
+
+    var
+      ParamBusca: String;
+      Retorno: RetornoConsulta;
   end;
 
 var
   Frm_BuscaProduto: TFrm_BuscaProduto;
-  retorno: Integer;
 
 implementation
 
@@ -80,6 +87,27 @@ uses
   Unt_DM;
 
 {$R *.dfm}
+
+procedure TFrm_BuscaProduto.AjustaFiltro;
+var
+  i: Integer;
+begin
+  if (Length(EdtBusca.Text) > 0) then begin
+    if (Length(EdtBusca.Text) = 13) then
+      RbCodBarras.Checked := True
+    else if (Length(EdtBusca.Text) > 6) then
+      RbProduto.Checked := True
+    else begin
+      RbCod.Checked := True;
+      for i := 1 to Length(Trim(EdtBusca.Text)) do begin
+        if not(EdtBusca.Text[i] in ['0' .. '9']) then begin
+          RbProduto.Checked := True;
+          Break;
+        end;
+      end;
+    end;
+  end;
+end;
 
 procedure TFrm_BuscaProduto.BtnBuscaClick(Sender: TObject);
 var retorno: String;
@@ -111,28 +139,38 @@ begin
 
     try
       if Length(Trim(EdtBusca.Text)) > 0 then begin
-        if RbCod.Checked = True then SelectSQL.Add('WHERE PRODUTOS.COD_PRODUTO = ' + EdtBusca.Text)
-        else if RbCodBarras.Checked = True then SelectSQL.Add('WHERE PRODUTOS.CODBARRA_PRODUTO LIKE ''' + EdtBusca.Text + '%''')
-        else SelectSQL.Add('WHERE LOWER(PRODUTOS.NOME_PRODUTO) LIKE ''' + LowerCase(EdtBusca.Text) + '%''');
+        if (RbCod.Checked = True) then begin
+          SelectSQL.Add('WHERE P.COD_PRODUTO = :COD');
+          ParamByName('COD').AsInteger := StrToIntDef(EdtBusca.Text, 0);
+        end else if (RbCodBarras.Checked = True) then begin
+          SelectSQL.Add('WHERE UPPER(P.CODBARRA_PRODUTO COLLATE WIN_PTBR) LIKE UPPER(:COD_BARRAS)');
+          ParamByName('COD_BARRAS').AsString := '%' + EdtBusca.Text + '%';
+        end else begin
+          SelectSQL.Add('WHERE UPPER(P.NOME_PRODUTO COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
+          ParamByName('NOME').AsString := '%' + EdtBusca.Text + '%';
+        end;
       end;
+
       SelectSQL.Add('ORDER BY P.COD_PRODUTO');
+
     except
       on E: exception do begin
-        ShowMessage('Erro ao executar busca. Erro: '+e.Message);
+        ShowMessage('Erro ao executar busca. Erro: ' + #13 + E.Message);
         Transaction.Rollback;
         Close;
-        Exit;
       end;
     end;
+
     Open;
 
-    // Contar Registros
-    LbRegistros.Caption := QryBuscaProduto.RecordCount.ToString;
-
-    // Foco na primeira linha
-    QryBuscaProduto.First;
-    DbgBuscaProduto.SelectedField := DbgBuscaProduto.Columns[0].Field;
-    DbgBuscaProduto.SetFocus;
+    if RecordCount > 0 then begin
+      LbRegistros.Caption := QryBuscaProduto.RecordCount.ToString;
+      QryBuscaProduto.First;
+      DbgBuscaProduto.SelectedField := DbgBuscaProduto.Columns[0].Field;
+      DbgBuscaProduto.SetFocus;
+    end else begin
+      EdtBusca.SelectAll;
+    end;
   end;
 end;
 
@@ -143,26 +181,21 @@ end;
 
 procedure TFrm_BuscaProduto.BtnSelecionarClick(Sender: TObject);
 begin
-  RetornoForm();
+  RetornoForm(True);
 end;
 
 procedure TFrm_BuscaProduto.DbgBuscaProdutoDblClick(Sender: TObject);
 begin
-  RetornoForm();
+  RetornoForm(True);
 end;
 
 procedure TFrm_BuscaProduto.DbgBuscaProdutoKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  if Key = VK_RETURN then
-  begin
-    RetornoForm();
-  end;
+  if Key = VK_RETURN then RetornoForm(True);
 end;
 
 procedure TFrm_BuscaProduto.EdtBuscaKeyPress(Sender: TObject; var Key: Char);
-var
-  i: Integer;
 begin
   if (Key = #13) then
   begin
@@ -171,32 +204,9 @@ begin
     Exit;
   end;
 
-  if Length(Trim(EdtBusca.Text)) = 0 then
-  begin
-    if not (Key in ['0' .. '9']) then RbProduto.Checked := True
-    else RbCod.Checked := True;
-    Exit;
-  end;
+  AjustaFiltro();
 
-  if Length(Trim(EdtBusca.Text)) > 0 then
-  begin
-    if (Length(Trim(EdtBusca.Text)) = 14) then begin
-      RbCodBarras.Checked;
-      Exit;
-    end else if (Length(Trim(EdtBusca.Text)) > 14) then begin
-      RbProduto.Checked;
-      Exit;
-    end;
-
-    if (RbCod.Checked) or (RbCodBarras.Checked) then
-    begin
-      for i := 1 to Length(Trim(EdtBusca.Text)) do
-      begin
-        if not(EdtBusca.Text[i] in ['0' .. '9']) then RbProduto.Checked := True;
-      end;
-    end;
-  end;
-
+  if (Key in ['0' .. '9']) then RbCod.Checked := True;
 end;
 
 procedure TFrm_BuscaProduto.FormCreate(Sender: TObject);
@@ -210,6 +220,17 @@ begin
   begin
     Key := #0;
     RetornoForm(False);
+  end;
+end;
+
+procedure TFrm_BuscaProduto.FormShow(Sender: TObject);
+var
+  I: Integer;
+begin
+  if (ParamBusca <> '') then begin
+    EdtBusca.Text := ParamBusca;
+    AjustaFiltro();
+    BtnBusca.Click;
   end;
 end;
 
@@ -231,10 +252,11 @@ end;
 procedure TFrm_BuscaProduto.RetornoForm(encontrou: Boolean);
 begin
   if encontrou = True then begin
-    retorno := QryBuscaProdutoCOD_PRODUTO.AsInteger;
+    retorno.Cod := QryBuscaProdutoCOD_PRODUTO.AsInteger;
+    retorno.Nome := QryBuscaProdutoNOME_PRODUTO.AsString;
     Frm_BuscaProduto.ModalResult := mrOk;
   end else begin
-    retorno := 0;
+    retorno.Cod := 0;
     Frm_BuscaProduto.ModalResult := mrCancel;
   end;
 end;

@@ -5,7 +5,7 @@ object Frm_PDV: TFrm_PDV
   BorderStyle = bsSingle
   Caption = 'PDV'
   ClientHeight = 575
-  ClientWidth = 794
+  ClientWidth = 869
   Color = clBtnFace
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
@@ -20,19 +20,20 @@ object Frm_PDV: TFrm_PDV
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlCliente: TPanel
     AlignWithMargins = True
-    Left = 5
-    Top = 0
-    Width = 784
+    Left = 0
+    Top = 5
+    Width = 869
     Height = 30
-    Margins.Left = 5
-    Margins.Top = 0
-    Margins.Right = 5
+    Margins.Left = 0
+    Margins.Top = 5
+    Margins.Right = 0
     Margins.Bottom = 0
     Align = alTop
     BevelOuter = bvNone
@@ -50,10 +51,11 @@ object Frm_PDV: TFrm_PDV
       object lbNomeOperador: TLabel
         Left = 0
         Top = 0
-        Width = 66
+        Width = 80
         Height = 30
         Margins.Left = 15
         Margins.Top = 0
+        Margins.Right = 0
         Margins.Bottom = 0
         Align = alLeft
         Alignment = taRightJustify
@@ -66,12 +68,11 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
       end
       object btnGetOperador: TSpeedButton
-        Left = 282
+        Left = 288
         Top = 0
-        Width = 25
+        Width = 23
         Height = 30
         Margins.Top = 1
         Margins.Right = 0
@@ -79,15 +80,13 @@ object Frm_PDV: TFrm_PDV
         Align = alRight
         Flat = True
         OnClick = btnGetOperadorClick
-        ExplicitLeft = 328
-        ExplicitTop = 1
-        ExplicitHeight = 25
+        ExplicitLeft = 290
       end
       object btnCadOperador: TSpeedButton
         Tag = 1
-        Left = 307
+        Left = 311
         Top = 0
-        Width = 27
+        Width = 23
         Height = 30
         Margins.Left = 0
         Margins.Top = 1
@@ -95,59 +94,55 @@ object Frm_PDV: TFrm_PDV
         Margins.Bottom = 1
         Align = alRight
         Flat = True
-        ExplicitLeft = 354
-        ExplicitTop = 1
-        ExplicitHeight = 25
+        ExplicitLeft = 312
       end
       object EdtCodOperador: TEdit
-        AlignWithMargins = True
-        Left = 66
-        Top = 1
-        Width = 45
-        Height = 28
+        Left = 80
+        Top = 0
+        Width = 70
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Color = clBlack
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
-        ExplicitHeight = 26
+        OnExit = EdtCodOperadorExit
+        OnKeyDown = EdtCodOperadorKeyDown
+        OnKeyPress = EdtCodOperadorKeyPress
+        ExplicitHeight = 28
       end
       object EdtNomeOperador: TEdit
-        AlignWithMargins = True
-        Left = 111
-        Top = 1
-        Width = 171
-        Height = 28
+        Left = 150
+        Top = 0
+        Width = 138
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         TabStop = False
         Align = alClient
-        Color = clWhite
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
-        ReadOnly = True
         TabOrder = 1
-        ExplicitHeight = 26
+        ExplicitHeight = 28
       end
     end
     object pnlDetPessoa: TPanel
       Left = 334
       Top = 0
-      Width = 450
+      Width = 535
       Height = 30
       Align = alClient
       AutoSize = True
@@ -162,6 +157,7 @@ object Frm_PDV: TFrm_PDV
         Height = 30
         Margins.Left = 15
         Margins.Top = 0
+        Margins.Right = 0
         Margins.Bottom = 0
         Align = alLeft
         Alignment = taCenter
@@ -177,9 +173,9 @@ object Frm_PDV: TFrm_PDV
       end
       object btnCadCliente: TSpeedButton
         Tag = 1
-        Left = 423
+        Left = 512
         Top = 0
-        Width = 27
+        Width = 23
         Height = 30
         Margins.Left = 0
         Margins.Top = 1
@@ -187,77 +183,74 @@ object Frm_PDV: TFrm_PDV
         Margins.Bottom = 1
         Align = alRight
         Flat = True
-        ExplicitLeft = 109
-        ExplicitTop = 1
-        ExplicitHeight = 25
+        OnClick = btnCadClienteClick
+        ExplicitLeft = 515
       end
       object btnGetCliente: TSpeedButton
-        Left = 399
+        Left = 489
         Top = 0
-        Width = 24
+        Width = 23
         Height = 30
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         Align = alRight
         Flat = True
-        ExplicitLeft = 111
-        ExplicitTop = 1
-        ExplicitHeight = 25
+        OnClick = btnGetClienteClick
+        ExplicitLeft = 492
       end
-      object EdtCliente: TEdit
+      object EdtCodCliente: TEdit
         Tag = 1
-        AlignWithMargins = True
-        Left = 65
-        Top = 1
-        Width = 42
-        Height = 28
+        Left = 62
+        Top = 0
+        Width = 70
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Color = clBlack
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
-        ExplicitHeight = 26
+        OnExit = EdtCodClienteExit
+        OnKeyDown = EdtCodClienteKeyDown
+        OnKeyPress = EdtCodOperadorKeyPress
+        ExplicitHeight = 28
       end
       object edtNomeCliente: TEdit
-        AlignWithMargins = True
-        Left = 107
-        Top = 1
-        Width = 292
-        Height = 28
+        Left = 132
+        Top = 0
+        Width = 357
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         TabStop = False
         Align = alClient
-        Color = clWhite
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Color = clWhite
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
         ReadOnly = True
         TabOrder = 1
-        ExplicitHeight = 26
+        ExplicitHeight = 28
       end
     end
   end
   object dbgPDV: TDBGrid
     AlignWithMargins = True
     Left = 3
-    Top = 93
-    Width = 788
-    Height = 339
+    Top = 98
+    Width = 863
+    Height = 334
     TabStop = False
     Align = alClient
     Color = 16776176
@@ -275,12 +268,71 @@ object Frm_PDV: TFrm_PDV
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'COD_PRODUTO'
+        Title.Alignment = taRightJustify
+        Title.Caption = 'C'#243'digo'
+        Width = 60
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NOME_PRODUTO'
+        Title.Caption = 'Produto'
+        Width = 350
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'PRVENDA_PRODUTO'
+        Title.Caption = 'Valor '#205'tem'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ESTQ_PRODUTO'
+        Visible = False
+      end
+      item
+        Expanded = False
+        FieldName = 'UND_PRODUTO'
+        Visible = False
+      end
+      item
+        Expanded = False
+        FieldName = 'QNT_PRODUTO'
+        Title.Caption = 'Qntd. '#205'tem'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'SUBTOTAL_PRODUTO'
+        Title.Caption = 'SubTotal'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CST'
+        Width = 30
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'PERC_ICMS_ESTADO'
+        Title.Caption = 'Aliq. ICMS'
+        Width = 60
+        Visible = True
+      end>
   end
   object pnlProd: TPanel
-    AlignWithMargins = True
-    Left = 5
-    Top = 30
-    Width = 784
+    Left = 0
+    Top = 35
+    Width = 869
     Height = 30
     Margins.Left = 5
     Margins.Top = 0
@@ -291,7 +343,7 @@ object Frm_PDV: TFrm_PDV
     TabOrder = 1
     object lbEstoque: TLabel
       AlignWithMargins = True
-      Left = 666
+      Left = 751
       Top = 0
       Width = 115
       Height = 30
@@ -309,10 +361,23 @@ object Frm_PDV: TFrm_PDV
       Layout = tlCenter
       ExplicitHeight = 16
     end
+    object BtnCadProd: TSpeedButton
+      Left = 713
+      Top = 0
+      Width = 23
+      Height = 30
+      Margins.Top = 1
+      Margins.Right = 0
+      Margins.Bottom = 1
+      Align = alRight
+      Flat = True
+      OnClick = BtnCadProdClick
+      ExplicitLeft = 716
+    end
     object pnlMyProd: TPanel
       Left = 0
       Top = 0
-      Width = 651
+      Width = 713
       Height = 30
       Align = alClient
       AutoSize = True
@@ -320,7 +385,7 @@ object Frm_PDV: TFrm_PDV
       Caption = 'pnlMyProd'
       TabOrder = 0
       object btnGetProduto: TSpeedButton
-        Left = 628
+        Left = 690
         Top = 0
         Width = 23
         Height = 30
@@ -329,13 +394,13 @@ object Frm_PDV: TFrm_PDV
         Margins.Bottom = 1
         Align = alRight
         Flat = True
-        ExplicitLeft = 277
-        ExplicitHeight = 21
+        OnClick = btnGetProdutoClick
+        ExplicitLeft = 693
       end
       object lbNomeProduto: TLabel
         Left = 0
         Top = 0
-        Width = 66
+        Width = 80
         Height = 30
         Margins.Left = 25
         Margins.Top = 0
@@ -351,60 +416,57 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 27
       end
       object edtNomeProduto: TEdit
-        AlignWithMargins = True
-        Left = 112
-        Top = 1
-        Width = 516
-        Height = 28
+        Left = 150
+        Top = 0
+        Width = 540
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         TabStop = False
         Align = alClient
-        Color = clWhite
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Color = clWhite
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
         ReadOnly = True
         TabOrder = 1
-        ExplicitHeight = 26
+        ExplicitHeight = 28
       end
-      object EdtProduto: TEdit
+      object EdtCodProduto: TEdit
         Tag = 2
-        AlignWithMargins = True
-        Left = 66
-        Top = 1
-        Width = 46
-        Height = 28
+        Left = 80
+        Top = 0
+        Width = 70
+        Height = 30
         Margins.Left = 0
         Margins.Top = 1
         Margins.Right = 0
         Margins.Bottom = 1
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Color = clBlack
+        Font.Height = -17
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
-        ExplicitHeight = 26
+        OnExit = EdtCodProdutoExit
+        OnKeyDown = EdtCodProdutoKeyDown
+        OnKeyPress = EdtCodOperadorKeyPress
+        ExplicitHeight = 28
       end
     end
   end
-  object pnlDetVendaProd: TPanel
-    AlignWithMargins = True
-    Left = 5
-    Top = 60
-    Width = 784
+  object PnlDetalheProduto: TPanel
+    Left = 0
+    Top = 65
+    Width = 869
     Height = 30
     Margins.Left = 5
     Margins.Top = 0
@@ -413,11 +475,11 @@ object Frm_PDV: TFrm_PDV
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
+    Visible = False
     object pnlDesc: TPanel
-      AlignWithMargins = True
-      Left = 446
+      Left = 593
       Top = 0
-      Width = 158
+      Width = 100
       Height = 30
       Margins.Left = 5
       Margins.Top = 0
@@ -426,17 +488,18 @@ object Frm_PDV: TFrm_PDV
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 3
+      TabOrder = 7
       object lbDesc: TLabel
         Left = 0
         Top = 0
-        Width = 66
+        Width = 100
         Height = 30
         Margins.Left = 15
         Margins.Top = 0
         Margins.Bottom = 0
         Align = alLeft
-        Alignment = taCenter
+        Alignment = taRightJustify
+        AutoSize = False
         Caption = 'Desconto:'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -445,33 +508,12 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
-      end
-      object EdtDesc: TEdit
-        Left = 66
-        Top = 0
-        Width = 92
-        Height = 30
-        Margins.Left = 0
-        Margins.Top = 1
-        Margins.Right = 0
-        Margins.Bottom = 1
-        Align = alLeft
-        Enabled = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        ExplicitHeight = 26
       end
     end
     object pnlQntd: TPanel
-      Left = 131
+      Left = 0
       Top = 0
-      Width = 150
+      Width = 80
       Height = 30
       Margins.Left = 5
       Margins.Top = 0
@@ -480,11 +522,11 @@ object Frm_PDV: TFrm_PDV
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 5
       object lbQntd: TLabel
         Left = 0
         Top = 0
-        Width = 66
+        Width = 80
         Height = 30
         Margins.Left = 50
         Margins.Top = 0
@@ -500,35 +542,12 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitLeft = -48
-      end
-      object edtQntd: TEdit
-        AlignWithMargins = True
-        Left = 66
-        Top = 1
-        Width = 84
-        Height = 28
-        Margins.Left = 0
-        Margins.Top = 1
-        Margins.Right = 0
-        Margins.Bottom = 1
-        Align = alLeft
-        Enabled = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        ExplicitHeight = 26
       end
     end
     object pnlSubtotal: TPanel
-      AlignWithMargins = True
-      Left = 286
+      Left = 382
       Top = 0
-      Width = 150
+      Width = 90
       Height = 30
       Margins.Left = 5
       Margins.Top = 0
@@ -537,17 +556,18 @@ object Frm_PDV: TFrm_PDV
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 2
+      TabOrder = 6
       object lbSubtot: TLabel
         Left = 0
         Top = 0
-        Width = 62
+        Width = 90
         Height = 30
         Margins.Left = 15
         Margins.Top = 0
         Margins.Bottom = 0
         Align = alLeft
-        Alignment = taCenter
+        Alignment = taRightJustify
+        AutoSize = False
         Caption = 'SubTotal:'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -556,34 +576,12 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
-      end
-      object Edit7: TEdit
-        Left = 62
-        Top = 0
-        Width = 88
-        Height = 30
-        Margins.Left = 0
-        Margins.Top = 1
-        Margins.Right = 0
-        Margins.Bottom = 1
-        Align = alLeft
-        Enabled = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        ExplicitHeight = 26
       end
     end
     object pnlVlr: TPanel
-      AlignWithMargins = True
-      Left = 5
+      Left = 201
       Top = 0
-      Width = 121
+      Width = 60
       Height = 30
       Margins.Left = 5
       Margins.Top = 0
@@ -592,17 +590,18 @@ object Frm_PDV: TFrm_PDV
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 0
+      TabOrder = 4
       object lbVlr: TLabel
         Left = 0
         Top = 0
-        Width = 37
+        Width = 60
         Height = 30
         Margins.Left = 15
         Margins.Top = 0
         Margins.Bottom = 0
         Align = alLeft
-        Alignment = taCenter
+        Alignment = taRightJustify
+        AutoSize = False
         Caption = 'Valor:'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -611,35 +610,91 @@ object Frm_PDV: TFrm_PDV
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitHeight = 18
       end
-      object Edit5: TEdit
-        Left = 37
-        Top = 0
-        Width = 84
-        Height = 30
-        Margins.Left = 0
-        Margins.Top = 1
-        Margins.Right = 0
-        Margins.Bottom = 1
-        Align = alLeft
-        Enabled = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        ExplicitHeight = 26
-      end
+    end
+    object EdtSubtotal: TDBEdit
+      Left = 472
+      Top = 0
+      Width = 121
+      Height = 30
+      Align = alLeft
+      BiDiMode = bdRightToLeft
+      DataField = 'SUBTOTAL_PRODUTO'
+      DataSource = DsPDV
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentFont = False
+      TabOrder = 2
+      OnExit = EdtSubtotalExit
+      ExplicitHeight = 29
+    end
+    object EdtVlr: TDBEdit
+      Left = 261
+      Top = 0
+      Width = 121
+      Height = 30
+      Align = alLeft
+      BiDiMode = bdRightToLeft
+      DataField = 'PRVENDA_PRODUTO'
+      DataSource = DsPDV
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentFont = False
+      TabOrder = 1
+      ExplicitHeight = 29
+    end
+    object EdtDes: TDBEdit
+      Left = 693
+      Top = 0
+      Width = 121
+      Height = 30
+      TabStop = False
+      Align = alLeft
+      BiDiMode = bdRightToLeft
+      DataSource = DsPDV
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentFont = False
+      TabOrder = 3
+      ExplicitHeight = 29
+    end
+    object EdtQnt: TDBEdit
+      Left = 80
+      Top = 0
+      Width = 121
+      Height = 30
+      Align = alLeft
+      BiDiMode = bdRightToLeft
+      DataField = 'QNT_PRODUTO'
+      DataSource = DsPDV
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentFont = False
+      TabOrder = 0
+      ExplicitHeight = 29
     end
   end
   object pnlDetVenda: TPanel
     AlignWithMargins = True
     Left = 5
     Top = 435
-    Width = 784
+    Width = 859
     Height = 80
     Margins.Left = 5
     Margins.Top = 0
@@ -1009,7 +1064,7 @@ object Frm_PDV: TFrm_PDV
     end
     object PnOutros: TPanel
       AlignWithMargins = True
-      Left = 643
+      Left = 718
       Top = 4
       Width = 137
       Height = 70
@@ -1106,7 +1161,7 @@ object Frm_PDV: TFrm_PDV
   object Panel4: TPanel
     Left = 0
     Top = 545
-    Width = 794
+    Width = 869
     Height = 30
     Margins.Left = 5
     Margins.Top = 6
@@ -1115,12 +1170,40 @@ object Frm_PDV: TFrm_PDV
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 6
+    object Panel1: TPanel
+      Left = 366
+      Top = -5
+      Width = 152
+      Height = 41
+      Align = alCustom
+      AutoSize = True
+      Caption = 'Panel1'
+      TabOrder = 0
+      object BitBtn2: TBitBtn
+        Left = -49
+        Top = 1
+        Width = 100
+        Height = 39
+        Align = alRight
+        Caption = 'BitBtn1'
+        TabOrder = 0
+      end
+      object BitBtn1: TBitBtn
+        Left = 51
+        Top = 1
+        Width = 100
+        Height = 39
+        Align = alRight
+        Caption = 'BitBtn1'
+        TabOrder = 1
+      end
+    end
   end
   object pnlPgmt: TPanel
     AlignWithMargins = True
     Left = 5
     Top = 515
-    Width = 784
+    Width = 859
     Height = 30
     Margins.Left = 5
     Margins.Top = 0
@@ -1131,17 +1214,17 @@ object Frm_PDV: TFrm_PDV
     object pnlFrmPgmt: TPanel
       Left = 1
       Top = 1
-      Width = 381
+      Width = 419
       Height = 28
       Margins.Left = 0
       Margins.Top = 0
       Margins.Bottom = 0
-      Align = alLeft
+      Align = alClient
       Padding.Right = 5
       TabOrder = 0
       object btnCadFrmPgmt: TSpeedButton
         Tag = 1
-        Left = 352
+        Left = 390
         Top = 1
         Width = 23
         Height = 26
@@ -1177,7 +1260,7 @@ object Frm_PDV: TFrm_PDV
         ExplicitHeight = 18
       end
       object btnGetFrmPgmt: TSpeedButton
-        Left = 329
+        Left = 367
         Top = 1
         Width = 23
         Height = 26
@@ -1194,7 +1277,7 @@ object Frm_PDV: TFrm_PDV
         AlignWithMargins = True
         Left = 199
         Top = 2
-        Width = 130
+        Width = 168
         Height = 24
         Margins.Left = 0
         Margins.Top = 1
@@ -1237,19 +1320,19 @@ object Frm_PDV: TFrm_PDV
       end
     end
     object pnlCondPgmt: TPanel
-      Left = 382
+      Left = 420
       Top = 1
-      Width = 412
+      Width = 438
       Height = 28
       Margins.Top = 0
       Margins.Right = 0
       Margins.Bottom = 0
-      Align = alLeft
+      Align = alRight
       Padding.Left = 7
       TabOrder = 1
       object btnCadCondPgmt: TSpeedButton
         Tag = 1
-        Left = 388
+        Left = 414
         Top = 1
         Width = 23
         Height = 26
@@ -1284,7 +1367,7 @@ object Frm_PDV: TFrm_PDV
         ExplicitHeight = 18
       end
       object btnGetCondPgmt: TSpeedButton
-        Left = 365
+        Left = 391
         Top = 1
         Width = 23
         Height = 26
@@ -1301,7 +1384,7 @@ object Frm_PDV: TFrm_PDV
         AlignWithMargins = True
         Left = 204
         Top = 2
-        Width = 161
+        Width = 187
         Height = 24
         Margins.Left = 0
         Margins.Top = 1
@@ -1344,79 +1427,14 @@ object Frm_PDV: TFrm_PDV
       end
     end
   end
-  object CdsPDV: TClientDataSet
-    Aggregates = <>
-    AggregatesActive = True
-    Params = <>
-    Left = 392
-    Top = 176
-    object CdsPDVCODITEM_VENDA: TIntegerField
-      DisplayLabel = #205'TEM'
-      FieldName = 'CODITEM'
-    end
-    object CdsPDVCODPRODUTO: TIntegerField
-      DisplayLabel = 'C'#211'D.'
-      FieldName = 'CODPRODUTO'
-    end
-    object CdsPDVPRODUTO: TStringField
-      FieldName = 'PRODUTO'
-    end
-    object CdsPDVUND: TStringField
-      FieldName = 'UND'
-    end
-    object CdsPDVQNT: TFloatField
-      FieldName = 'QNT'
-    end
-    object CdsPDVVLRUNIT: TCurrencyField
-      DisplayLabel = 'PRE'#199'O UNIT.'
-      FieldName = 'VLRUNIT'
-    end
-    object CdsPDVSUBTOTAL: TCurrencyField
-      FieldName = 'SUBTOTAL'
-    end
-    object CdsPDVREF: TStringField
-      DisplayLabel = 'REF.'
-      FieldName = 'REF'
-    end
-    object CdsPDVBCICMS: TFloatField
-      DisplayLabel = 'BC ICMS'
-      FieldName = 'BCICMS'
-    end
-    object CdsPDVALIQICMS: TFloatField
-      DisplayLabel = '%ICMS'
-      FieldName = 'ALIQICMS'
-    end
-    object CdsPDVICMS: TFloatField
-      FieldName = 'ICMS'
-    end
-    object CdsPDVBCST: TFloatField
-      FieldName = 'BC ST'
-    end
-    object CdsPDVALIQST: TFloatField
-      FieldName = 'ALIQST'
-    end
-    object CdsPDVST: TFloatField
-      FieldName = 'ST'
-    end
-    object CdsPDVSUBTOTAL_VENDA: TAggregateField
-      FieldName = 'SUBTOTAL_VENDA'
-      DisplayName = ''
-      Expression = 'SUM(SUBTOTAL)'
-    end
-    object CdsPDVTOTAL_VENDA: TAggregateField
-      FieldName = 'TOTAL_VENDA'
-      DisplayName = ''
-      Expression = 'SUM(SUBTOTAL)'
-    end
-  end
   object DsPDV: TDataSource
     DataSet = CdsPDV
-    Left = 392
-    Top = 240
+    Left = 603
+    Top = 262
   end
   object MenuPDV: TPopupMenu
-    Left = 456
-    Top = 176
+    Left = 607
+    Top = 318
     object BtnAbrirCadMenu: TMenuItem
       Caption = 'Abrir Cadastro Produto'
     end
@@ -1428,6 +1446,106 @@ object Frm_PDV: TFrm_PDV
     end
     object MudarPreoUnitrio1: TMenuItem
       Caption = 'Alterar Valor Unit'#225'rio'
+    end
+  end
+  object QryProdPDV: TpFIBDataSet
+    SelectSQL.Strings = (
+      '')
+    SQL.Strings = (
+      '')
+    Left = 560
+    Top = 320
+    object QryProdPDVCOD_PRODUTO: TFIBIntegerField
+      FieldName = 'COD_PRODUTO'
+    end
+    object QryProdPDVNOME_PRODUTO: TFIBStringField
+      FieldName = 'NOME_PRODUTO'
+      Size = 60
+      EmptyStrToNull = True
+    end
+    object QryProdPDVPRVENDA_PRODUTO: TFIBBCDField
+      FieldName = 'PRVENDA_PRODUTO'
+      Size = 3
+    end
+    object QryProdPDVESTOQUE_PRODUTO: TFIBBCDField
+      FieldName = 'ESTOQUE_PRODUTO'
+      Size = 3
+    end
+    object QryProdPDVUNIDADE_PRODUTO: TFIBSmallIntField
+      FieldName = 'UNIDADE_PRODUTO'
+    end
+    object QryProdPDVCST_PRODUTO: TFIBStringField
+      FieldName = 'CST_PRODUTO'
+      Size = 4
+      EmptyStrToNull = True
+    end
+    object QryProdPDVPERC_ICMS_ESTADO_PRODUTO: TFIBFloatField
+      FieldName = 'PERC_ICMS_ESTADO_PRODUTO'
+    end
+    object QryProdPDVQNTD_ITEM: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'QNTD_ITEM'
+      Calculated = True
+    end
+    object QryProdPDVSUBTOTAL: TAggregateField
+      FieldName = 'SUBTOTAL'
+      Active = True
+      DisplayName = ''
+      Expression = 'PRVENDA_PRODUTO * 2'
+    end
+  end
+  object CdsPDV: TpFIBClientDataSet
+    PersistDataPacket.Data = {
+      D10000009619E0BD010000001800000007000000000003000000D1000B434F44
+      5F50524F4455544F04000100000000000C4E4F4D455F50524F4455544F010049
+      00000001000557494454480200020014000F505256454E44415F50524F445554
+      4F080004000000010007535542545950450200490006004D6F6E6579000C4553
+      54515F50524F4455544F08000400000000000B554E445F50524F4455544F0400
+      01000000000010504552435F49434D535F45535441444F08000400000000000B
+      514E545F50524F4455544F08000400000000000000}
+    Active = True
+    Aggregates = <>
+    Params = <>
+    OnCalcFields = CdsPDVCalcFields
+    Left = 560
+    Top = 248
+    object CdsPDVCOD_PRODUTO: TIntegerField
+      FieldName = 'COD_PRODUTO'
+    end
+    object CdsPDVNOME_PRODUTO: TStringField
+      FieldName = 'NOME_PRODUTO'
+    end
+    object CdsPDVPRVENDA_PRODUTO: TCurrencyField
+      FieldName = 'PRVENDA_PRODUTO'
+      DisplayFormat = '#,###,##0.00'
+      currency = False
+    end
+    object CdsPDVESTQ_PRODUTO: TFloatField
+      FieldName = 'ESTQ_PRODUTO'
+    end
+    object CdsPDVUND_PRODUTO: TIntegerField
+      FieldName = 'UND_PRODUTO'
+    end
+    object CdsPDVPERC_ICMS_ESTADO: TFloatField
+      FieldName = 'PERC_ICMS_ESTADO'
+      DisplayFormat = '##%'
+    end
+    object CdsPDVQNT_PRODUTO: TFloatField
+      FieldName = 'QNT_PRODUTO'
+      DisplayFormat = '#0.000'
+    end
+    object CdsPDVSUBTOTAL_PRODUTO: TCurrencyField
+      FieldKind = fkCalculated
+      FieldName = 'SUBTOTAL_PRODUTO'
+      DisplayFormat = '#,###,##0.00'
+      currency = False
+      Calculated = True
+    end
+    object CdsPDVCST: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'CST'
+      Size = 4
+      Calculated = True
     end
   end
 end

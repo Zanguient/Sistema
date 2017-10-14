@@ -4,9 +4,9 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.StrUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids, Vcl.DBGrids,
-  Vcl.ExtCtrls, UnitBuscarOp, UnitBuscaProd, Unt_FrmBuscaCliente, Unt_FrmCadCliente, UnitCadOper,
-  UnitFuncoes, Unt_DM, Vcl.Mask, Vcl.Menus, Datasnap.Provider, Datasnap.DBClient;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls,
+  UnitFuncoes, Vcl.Mask, Vcl.Menus, Datasnap.Provider, Datasnap.DBClient, JvExMask, JvToolEdit, JvBaseEdits,
+  MyJVCurrencyEdit, System.ImageList, Vcl.ImgList, FIBDataSet, pFIBDataSet, Vcl.DBCtrls, pFIBClientDataSet;
 
 type
   TFrm_PDV = class(TForm)
@@ -38,7 +38,7 @@ type
     btnCadCondPgmt: TSpeedButton;
     btnGetCondPgmt: TSpeedButton;
     btnDelItem: TBitBtn;
-    pnlDetVendaProd: TPanel;
+    PnlDetalheProduto: TPanel;
     pnlDetVenda: TPanel;
     Panel4: TPanel;
     pnlPgmt: TPanel;
@@ -63,24 +63,6 @@ type
 
     dbgPDV: TDBGrid;
     DsPDV: TDataSource;
-
-    CdsPDV: TClientDataSet;
-    CdsPDVCODITEM_VENDA: TIntegerField;
-    CdsPDVCODPRODUTO: TIntegerField;
-    CdsPDVPRODUTO: TStringField;
-    CdsPDVQNT: TFloatField;
-    CdsPDVVLRUNIT: TCurrencyField;
-    CdsPDVSUBTOTAL: TCurrencyField;
-    CdsPDVBCICMS: TFloatField;
-    CdsPDVALIQICMS: TFloatField;
-    CdsPDVREF: TStringField;
-    CdsPDVUND: TStringField;
-    CdsPDVICMS: TFloatField;
-    CdsPDVBCST: TFloatField;
-    CdsPDVALIQST: TFloatField;
-    CdsPDVST: TFloatField;
-    CdsPDVSUBTOTAL_VENDA: TAggregateField;
-    CdsPDVTOTAL_VENDA: TAggregateField;
     pnlOperador: TPanel;
     lbNomeOperador: TLabel;
     btnGetOperador: TSpeedButton;
@@ -89,7 +71,7 @@ type
     EdtNomeOperador: TEdit;
     pnlDetPessoa: TPanel;
     lbNomeCliente: TLabel;
-    EdtCliente: TEdit;
+    EdtCodCliente: TEdit;
     edtNomeCliente: TEdit;
     btnCadCliente: TSpeedButton;
     btnGetCliente: TSpeedButton;
@@ -97,32 +79,73 @@ type
     btnGetProduto: TSpeedButton;
     lbNomeProduto: TLabel;
     edtNomeProduto: TEdit;
-    EdtProduto: TEdit;
+    EdtCodProduto: TEdit;
     lbEstoque: TLabel;
     pnlDesc: TPanel;
     lbDesc: TLabel;
-    EdtDesc: TEdit;
     pnlSubtotal: TPanel;
     lbSubtot: TLabel;
-    Edit7: TEdit;
     pnlVlr: TPanel;
     lbVlr: TLabel;
-    Edit5: TEdit;
     pnlQntd: TPanel;
     lbQntd: TLabel;
-    edtQntd: TEdit;
     Shape1: TShape;
+    BtnCadProd: TSpeedButton;
+    Panel1: TPanel;
+    BitBtn2: TBitBtn;
+    BitBtn1: TBitBtn;
+    QryProdPDV: TpFIBDataSet;
+    QryProdPDVCOD_PRODUTO: TFIBIntegerField;
+    QryProdPDVNOME_PRODUTO: TFIBStringField;
+    QryProdPDVPRVENDA_PRODUTO: TFIBBCDField;
+    QryProdPDVESTOQUE_PRODUTO: TFIBBCDField;
+    QryProdPDVUNIDADE_PRODUTO: TFIBSmallIntField;
+    QryProdPDVCST_PRODUTO: TFIBStringField;
+    QryProdPDVPERC_ICMS_ESTADO_PRODUTO: TFIBFloatField;
+    EdtSubtotal: TDBEdit;
+    EdtVlr: TDBEdit;
+    EdtDes: TDBEdit;
+    EdtQnt: TDBEdit;
+    QryProdPDVSUBTOTAL: TAggregateField;
+    QryProdPDVQNTD_ITEM: TFloatField;
+    CdsPDV: TpFIBClientDataSet;
+    CdsPDVCOD_PRODUTO: TIntegerField;
+    CdsPDVNOME_PRODUTO: TStringField;
+    CdsPDVPRVENDA_PRODUTO: TCurrencyField;
+    CdsPDVESTQ_PRODUTO: TFloatField;
+    CdsPDVUND_PRODUTO: TIntegerField;
+    CdsPDVPERC_ICMS_ESTADO: TFloatField;
+    CdsPDVQNT_PRODUTO: TFloatField;
+    CdsPDVSUBTOTAL_PRODUTO: TCurrencyField;
+    CdsPDVCST: TStringField;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cEdtQntKeyPress(Sender: TObject; var Key: Char);
     procedure btnCancelarClick(Sender: TObject);
-    procedure FdQueryPDVID_PRODUTOGetText(Sender: TField; var Text: string; DisplayText: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure btnGetOperadorClick(Sender: TObject);
+    procedure EdtCodOperadorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnGetClienteClick(Sender: TObject);
+    procedure EdtCodClienteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnGetProdutoClick(Sender: TObject);
+    procedure EdtCodProdutoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnCadClienteClick(Sender: TObject);
+    procedure BtnCadProdClick(Sender: TObject);
+    procedure EdtCodOperadorKeyPress(Sender: TObject; var Key: Char);
+    procedure EdtCodOperadorExit(Sender: TObject);
+    procedure EdtCodClienteExit(Sender: TObject);
+    procedure EdtCodProdutoExit(Sender: TObject);
+    procedure CdsPDVCalcFields(DataSet: TDataSet);
+    procedure EdtSubtotalExit(Sender: TObject);
 
   strict private
+    procedure BuscaOperadorPDV(cod: Integer);
+    procedure AbreTelaBuscaOperador(pTxtBusca: String = '');
+    procedure AbreTelaBuscaCliente(pTxtBusca: String = '');
+    procedure AbreTelaBuscaProduto(pTxtBusca: String = '');
     procedure PreencheImgBtn;
     procedure VerifOperador;
     procedure LimparLabels;
@@ -131,7 +154,8 @@ type
     procedure FecharPDV;
     procedure ConfigIni;
     procedure AttVenda;
-    procedure BuscaOperadorPDV(cod: Integer);
+    procedure LimparCamposItens;
+
     function HeProdutoReptdo: Boolean;
     function AutoIncItem: Integer;
 
@@ -143,7 +167,8 @@ var
 implementation
 
 uses
-  Unt_FrmPrincipal, Unt_FrmBuscaGenerica;
+  Unt_FrmPrincipal, Unt_FrmBuscaOperador, Unt_FrmBuscaCliente, UnitBuscarOp,
+  UnitBuscaProd, Unt_FrmCadCliente, UnitCadOper, Unt_FrmBuscaProduto, Unt_DM;
 
 var
   CodOp: Integer;
@@ -180,6 +205,84 @@ begin
   end;
 end;
 
+procedure TFrm_PDV.CdsPDVCalcFields(DataSet: TDataSet);
+begin
+ CdsPDVSUBTOTAL_PRODUTO.AsCurrency := CdsPDVPRVENDA_PRODUTO.AsCurrency * CdsPDVQNT_PRODUTO.AsFloat;
+end;
+
+procedure TFrm_PDV.AbreTelaBuscaOperador(pTxtBusca: String);
+begin
+  with (Frm_BuscaOperador) do begin
+    try
+      Application.CreateForm(TFrm_BuscaOperador, Frm_BuscaOperador);
+      ParamBusca := pTxtBusca;
+
+      ShowModal;
+
+      if (ModalResult = mrOk) then begin
+        EdtCodOperador.Text := Retorno.Cod.ToString;
+        EdtNomeOperador.Text := Retorno.Nome;
+        EdtCodOperador.SelectAll;
+      end else begin
+        EdtCodOperador.SelectAll;
+        EdtCodOperador.SetFocus;
+      end;
+    finally
+      FreeAndNil(Frm_BuscaOperador);
+    end;
+  end;
+end;
+
+procedure TFrm_PDV.AbreTelaBuscaCliente(pTxtBusca: String);
+begin
+  with (Unt_FrmBuscaCliente.FormBuscador) do begin
+    try
+      Application.CreateForm(Unt_FrmBuscaCliente.TFormBuscador, Unt_FrmBuscaCliente.FormBuscador);
+      ParamBusca := pTxtBusca;
+
+      ShowModal;
+
+      if (ModalResult = mrOk) then begin
+        EdtCodCliente.Text := Retorno.Cod.ToString;
+        EdtCodCliente.SelectAll;
+
+        edtNomeCliente.Text :=
+          Unt_DM.getCampoSelect('SELECT C.NOME_CLIENTE FROM CLIENTES C WHERE C.COD_CLIENTE = ' + EdtCodCliente.Text);
+
+        PreencheImgBtn;
+      end else begin
+        EdtCodCliente.SelectAll;
+        EdtCodCliente.SetFocus;
+      end;
+    finally
+      FreeAndNil(Unt_FrmBuscaCliente.FormBuscador);
+    end;
+  end;
+end;
+
+procedure TFrm_PDV.AbreTelaBuscaProduto(pTxtBusca: String = '');
+begin
+  with (Frm_BuscaProduto) do begin
+    try
+      Application.CreateForm(TFrm_BuscaProduto, Frm_BuscaProduto);
+
+      ParamBusca := pTxtBusca;
+
+      ShowModal;
+
+      if (ModalResult = mrOk) then begin
+        EdtCodProduto.Text := Retorno.Cod.ToString;
+        EdtCodProduto.SelectAll;
+      end else begin
+        EdtCodCliente.SelectAll;
+        EdtCodCliente.SetFocus;
+      end;
+    finally
+      FreeAndNil(Frm_BuscaProduto);
+    end;
+  end;
+end;
+
 procedure TFrm_PDV.AddNewItem;
 var
   ID, CodProd: Integer;
@@ -203,31 +306,31 @@ begin
   end
   else
   begin
-    CdsPDV.Append;
-    CdsPDVCODITEM_VENDA.AsInteger := ID;
-    CdsPDVBCICMS.AsFloat := BcIcms;
-    CdsPDVALIQICMS.AsFloat := AliqIcms;
-    CdsPDVREF.AsString := refProduto;
-    CdsPDVPRODUTO.AsString := produto;
-    CdsPDVUND.AsString := und;
-    CdsPDVICMS.AsFloat := BcIcms * AliqIcms;
-    CdsPDVCODPRODUTO.AsInteger := CodProd;
-    CdsPDVQNT.AsFloat := Qnte;
-    CdsPDVVLRUNIT.AsFloat := VlrUnit;
-    CdsPDVSUBTOTAL.AsCurrency := VlrSubt;
-    CdsPDV.Post;
+//    CdsPDV.Append;
+//    CdsPDVCODITEM_VENDA.AsInteger := ID;
+//    CdsPDVBCICMS.AsFloat := BcIcms;
+//    CdsPDVALIQICMS.AsFloat := AliqIcms;
+//    CdsPDVREF.AsString := refProduto;
+//    CdsPDVPRODUTO.AsString := produto;
+//    CdsPDVUND.AsString := und;
+//    CdsPDVICMS.AsFloat := BcIcms * AliqIcms;
+//    CdsPDVCODPRODUTO.AsInteger := CodProd;
+//    CdsPDVQNT.AsFloat := Qnte;
+//    CdsPDVVLRUNIT.AsFloat := VlrUnit;
+//    CdsPDVSUBTOTAL.AsCurrency := VlrSubt;
+//    CdsPDV.Post;
   end;
 end;
 
 procedure TFrm_PDV.AttVenda;
 begin
-  FormatSettings.ThousandSeparator := '.';
-  FormatSettings.DecimalSeparator := ',';
-
-  LbSubTotal.Caption := UnitFuncoes.FormatarBanco
-    (CdsPDVSUBTOTAL_VENDA.AsString);
-  LbTotal.Caption := FormatarBanco(CdsPDVTOTAL_VENDA.AsString);
-  lbQntItens.Caption := IntToStr(CdsPDV.RecordCount);
+//  FormatSettings.ThousandSeparator := '.';
+//  FormatSettings.DecimalSeparator := ',';
+//
+//  LbSubTotal.Caption := UnitFuncoes.FormatarBanco
+//    (CdsPDVSUBTOTAL_VENDA.AsString);
+//  LbTotal.Caption := FormatarBanco(CdsPDVTOTAL_VENDA.AsString);
+//  lbQntItens.Caption := IntToStr(CdsPDV.RecordCount);
 end;
 
 function TFrm_PDV.AutoIncItem: Integer;
@@ -246,34 +349,58 @@ begin
   Result := newID;
 end;
 
+procedure TFrm_PDV.btnCadClienteClick(Sender: TObject);
+begin
+  if (Length(Trim(EdtCodCliente.Text)) > 0) then Frm_principal.AbreTelaCliente(StrToInt(EdtCodCliente.Text))
+  else Frm_principal.AbreTelaCliente(0);
+end;
+
 procedure TFrm_PDV.btnCancelarClick(Sender: TObject);
 begin
   FecharPDV;
 end;
 
-procedure TFrm_PDV.btnGetOperadorClick(Sender: TObject);
-var FrmBuscaGen: TFrm_BuscaGen;
+procedure TFrm_PDV.btnGetClienteClick(Sender: TObject);
 begin
-  with (Frm_BuscaGen) do begin
+  with (Unt_FrmBuscaCliente.FormBuscador) do begin
     try
-      Application.CreateForm(TFrm_BuscaGen, Frm_BuscaGen);
-      Create('COD_VENDEDOR', 'NOME_VENDEDOR', 'VENDEDORES', 'filtro');
+      Application.CreateForm(TFormBuscador, FormBuscador);
       ShowModal;
+
       if (ModalResult = mrOk) then begin
-
-      end else begin
-
+        EdtCodCliente.Text := retorno.Cod.ToString;
+        edtNomeCliente.Text := retorno.Nome;
+        EdtCodCliente.SelectAll;
       end;
+
     finally
-      FreeAndNil(Frm_BuscaGen);
+      FreeAndNil(Unt_FrmBuscaCliente.FormBuscador);
     end;
   end;
 end;
 
-procedure TFrm_PDV.FdQueryPDVID_PRODUTOGetText(Sender: TField; var Text: string;
-  DisplayText: Boolean);
+procedure TFrm_PDV.btnGetOperadorClick(Sender: TObject);
 begin
-  ShowMessage('teste: ' + Sender.AsString);
+  AbreTelaBuscaOperador();
+end;
+
+procedure TFrm_PDV.btnGetProdutoClick(Sender: TObject);
+begin
+  with (Frm_BuscaProduto) do begin
+    try
+      Application.CreateForm(TFrm_BuscaProduto, Frm_BuscaProduto);
+      ShowModal;
+
+      if (ModalResult = mrOk) then begin
+        EdtCodProduto.Text := retorno.Cod.ToString;
+        edtNomeProduto.Text := retorno.Nome;
+        EdtCodProduto.SelectAll;
+      end;
+
+    finally
+      FreeAndNil(Frm_BuscaProduto);
+    end;
+  end;
 end;
 
 procedure TFrm_PDV.FecharPDV;
@@ -281,8 +408,8 @@ var
   msg, title: PWideChar;
   vlrSTotal: Double;
 begin
-  if StrToFloat(CdsPDVSUBTOTAL_VENDA.AsString) > 0 then MsgConfirmacao('Deseja realmente cancelar a venda?', 'Cancelar Venda')
-  else MsgFixa(UnitFuncoes.tMsgCloseFrm);
+//  if StrToFloat(CdsPDVSUBTOTAL_VENDA.AsString) > 0 then MsgConfirmacao('Deseja realmente cancelar a venda?', 'Cancelar Venda')
+//  else MsgFixa(UnitFuncoes.tMsgCloseFrm);
 end;
 
 procedure TFrm_PDV.cEdtQntKeyPress(Sender: TObject; var Key: Char);
@@ -301,6 +428,192 @@ begin
   AttVenda;
 end;
 
+procedure TFrm_PDV.EdtCodClienteExit(Sender: TObject);
+begin
+  if (Length(Trim(EdtCodCliente.Text)) > 0) then begin
+    with getNewQuery() do begin
+      try
+        try
+          if (StrToIntDef(EdtCodCliente.Text, 0) = 0) then begin //pesquisa por Nome
+            SQL.Add('SELECT C.COD_CLIENTE, C.NOME_CLIENTE FROM CLIENTES C');
+            SQL.Add('WHERE UPPER(C.NOME_CLIENTE COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
+            ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodCliente.Text) + '%';
+          end else begin //Pesquisa por Cod
+            SQL.Add('SELECT C.COD_CLIENTE, C.NOME_CLIENTE FROM CLIENTES C WHERE C.COD_CLIENTE = :COD');
+            ParamByName('COD').AsInteger := StrToIntDef(EdtCodCliente.Text, 0);
+          end;
+
+          ExecQuery;
+
+          if (RecordCount = 1) then begin
+            EdtCodCliente.Text  := FieldByName('COD_CLIENTE').AsString;
+            edtNomeCliente.Text := FieldByName('NOME_CLIENTE').AsString;
+            PreencheImgBtn;
+          end else
+            AbreTelaBuscaCliente(EdtCodCliente.Text);
+        except
+          on E: Exception do begin
+            MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
+          end;
+        end;
+      finally
+        LiberarQuery(Name);
+      end;
+    end;
+  end;
+end;
+
+procedure TFrm_PDV.EdtCodClienteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_F3) then btnGetCliente.Click
+  else if (Key = VK_ADD) then btnCadCliente.Click;
+end;
+
+procedure TFrm_PDV.EdtCodOperadorExit(Sender: TObject);
+begin
+  if (Length(Trim(EdtCodOperador.Text)) > 0) then begin
+    with getNewQuery() do begin
+      try
+        try
+          if (StrToIntDef(EdtCodOperador.Text, 0) = 0) then begin //pesquisa por Nome
+            SQL.Add('SELECT V.COD_VENDEDOR, V.NOME_VENDEDOR FROM VENDEDORES V');
+            SQL.Add('WHERE UPPER(V.NOME_VENDEDOR COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
+            ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodOperador.Text) + '%';
+          end else begin //Pesquisa por Cod
+            SQL.Add('SELECT V.COD_VENDEDOR, V.NOME_VENDEDOR FROM VENDEDORES V WHERE V.COD_VENDEDOR = :COD');
+            ParamByName('COD').AsInteger := StrToIntDef(EdtCodOperador.Text, 0);
+          end;
+
+          ExecQuery;
+
+          if (RecordCount = 1) then begin
+            EdtCodOperador.Text  := FieldByName('COD_VENDEDOR').AsString;
+            EdtNomeOperador.Text := FieldByName('NOME_VENDEDOR').AsString;
+            PreencheImgBtn;
+          end else
+            AbreTelaBuscaOperador(EdtCodOperador.Text);
+        except
+          on E: Exception do begin
+            MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
+          end;
+        end;
+      finally
+        LiberarQuery(Name);
+      end;
+    end;
+  end;
+end;
+
+procedure TFrm_PDV.EdtCodOperadorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_F3) then btnGetOperador.Click
+  else if (Key = VK_ADD) then btnCadOperador.Click;
+end;
+
+procedure TFrm_PDV.EdtCodOperadorKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Key = #43) then Key := #0;
+end;
+
+procedure TFrm_PDV.EdtCodProdutoExit(Sender: TObject);
+begin
+  if (Length(Trim(EdtCodProduto.Text)) > 0) then begin
+    with getNewQuery() do begin
+      try
+        try
+          if (EdtCodProduto.Text = '') or (edtNomeProduto.Text = '') then begin //Busca Produto
+            Close;
+            SQL.Clear;
+
+            if (StrToIntDef(EdtCodProduto.Text, 0) = 0) then begin //pesquisa por Nome
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P');
+              SQL.Add('WHERE UPPER(P.NOME_PRODUTO COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
+              ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodProduto.Text) + '%';
+
+            end else if (Length(EdtCodProduto.Text) = 14) then begin //Pesquisar por Cod de Barras
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.CODBARRA_PRODUTO = :COD');
+              ParamByName('COD').AsString := EdtCodProduto.Text;
+
+            end else begin //Pesquisa por Cod
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.COD_PRODUTO = :COD');
+              ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
+            end;
+
+            ExecQuery;
+
+            if (RecordCount = 1) then begin
+              EdtCodProduto.Text  := FieldByName('COD_PRODUTO').AsString;
+              edtNomeProduto.Text := FieldByName('NOME_PRODUTO').AsString;
+              PreencheImgBtn;
+            end else
+              AbreTelaBuscaProduto(EdtCodProduto.Text);
+          end;
+
+          if not (EdtCodProduto.Text = '') and not (edtNomeProduto.Text = '') then begin //Busca Detalhes Produto
+            Close;
+            SQL.Clear;
+
+            SQL.Add('SELECT');
+            SQL.Add('P.COD_PRODUTO,');
+            SQL.Add('P.NOME_PRODUTO,');
+            SQL.Add('P.PRVENDA_PRODUTO,');
+            SQL.Add('P.ESTOQUE_PRODUTO,');
+            SQL.Add('P.UNIDADE_PRODUTO,');
+            SQL.Add('P.CST,');
+            SQL.Add('P.PERC_ICMS_ESTADO_PRODUTO');
+            SQL.Add('FROM PRODUTOS P');
+            SQL.Add('WHERE P.COD_PRODUTO = :COD');
+            ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
+
+            ExecQuery;
+
+            CdsPDV.Open;
+
+            if (CdsPDV.Locate(CdsPDVCOD_PRODUTO.FieldName, FieldByName('COD_PRODUTO').AsInteger,[])) then begin
+              dsPDV.Edit;
+              CdsPDVQNT_PRODUTO.AsFloat := StrToFloatDef(EdtQnt.Text,1) + CdsPDVQNT_PRODUTO.AsFloat;
+            end else CdsPDV.Append;
+
+            CdsPDVCOD_PRODUTO.AsInteger := FieldByName('COD_PRODUTO').AsInteger;
+            CdsPDVNOME_PRODUTO.AsString := FieldByName('NOME_PRODUTO').AsString;
+            CdsPDVPRVENDA_PRODUTO.AsCurrency := FieldByName('PRVENDA_PRODUTO').AsCurrency;
+            CdsPDVESTQ_PRODUTO.AsFloat := FieldByName('ESTOQUE_PRODUTO').AsFloat;
+            CdsPDVUND_PRODUTO.AsInteger := FieldByName('UNIDADE_PRODUTO').AsInteger;
+            CdsPDVCST.AsString := FieldByName('CST').AsString;
+            CdsPDVPERC_ICMS_ESTADO.AsFloat := FieldByName('PERC_ICMS_ESTADO_PRODUTO').AsFloat;
+            CdsPDVQNT_PRODUTO.AsFloat := StrToFloatDef(EdtQnt.Text,1);
+            CdsPDVSUBTOTAL_PRODUTO.AsCurrency := CdsPDVQNT_PRODUTO.AsFloat * CdsPDVPRVENDA_PRODUTO.AsCurrency;
+
+            CdsPDV.Post;
+          end;
+
+          if not (PnlDetalheProduto.Visible) then LimparCamposItens;
+
+        except
+          on E: Exception do begin
+            Transaction.Rollback;
+            Close;
+            MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
+          end;
+        end;
+      finally
+        LiberarQuery(Name);
+      end;
+    end;
+  end;
+end;
+
+procedure TFrm_PDV.EdtCodProdutoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_F3) then btnGetProduto.Click
+  else if (Key = VK_ADD) then BtnCadProd.Click;
+end;
+
+procedure TFrm_PDV.EdtSubtotalExit(Sender: TObject);
+begin
+  LimparCamposItens;
+end;
+
 procedure TFrm_PDV.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   UnitFuncoes.LimpaCampos(Self);
@@ -309,15 +622,24 @@ end;
 procedure TFrm_PDV.FormCreate(Sender: TObject);
 begin
   PreencheImgBtn;
+
   pnlFrmPgmt.Width := Screen.Width DIV 3;
   pnlCondPgmt.Width := Screen.Width DIV 3;
+
+  MudaCorEditReadOnly($00E7D8CF, $262626, [EdtNomeOperador, edtNomeCliente, edtNomeProduto]);
+
+  PnlDetalheProduto.Visible := True;
+end;
+
+procedure TFrm_PDV.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_F5) then PnlDetalheProduto.Visible := not PnlDetalheProduto.Visible;
 end;
 
 procedure TFrm_PDV.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = #13) then begin
-
-  end;
+  if (Key = #27) then Close
+  else if (Key = #13) then Perform(WM_NEXTDLGCTL, 0, 0);
 end;
 
 procedure TFrm_PDV.FormShow(Sender: TObject);
@@ -333,8 +655,21 @@ end;
 
 function TFrm_PDV.HeProdutoReptdo: Boolean;
 begin
-  if CdsPDV.Locate('CODPRODUTO', EdtProduto.Text, []) then Result := True
+  if CdsPDV.Locate('CODPRODUTO', EdtCodProduto.Text, []) then Result := True
   else Result := False;
+end;
+
+procedure TFrm_PDV.LimparCamposItens;
+begin
+  EdtCodProduto.Clear;
+  edtNomeProduto.Clear;
+  EdtQnt.Clear;
+  EdtVlr.Clear;
+  EdtSubtotal.Clear;
+  EdtDes.Clear;
+
+  EdtCodProduto.SelectAll;
+  EdtCodProduto.SetFocus;
 end;
 
 procedure TFrm_PDV.LimparLabels;
@@ -352,10 +687,45 @@ begin
     GetBitmap(0, btnGetFrmPgmt.Glyph);
     GetBitmap(0, btnGetCondPgmt.Glyph);
 
-    if (edtNomeCliente.Text = '') then GetBitmap(4, btnCadCliente.Glyph) else GetBitmap(1, btnCadCliente.Glyph);
-    if (EdtNomeOperador.Text = '') then GetBitmap(4, btnCadOperador.Glyph) else GetBitmap(1, btnCadOperador.Glyph);
-    if (edtNomeFrmPgmt.Text = '') then GetBitmap(4, btnCadFrmPgmt.Glyph) else GetBitmap(1, btnCadFrmPgmt.Glyph);
-    if (edtNomeCondPgmt.Text = '') then GetBitmap(4, btnCadCondPgmt.Glyph) else GetBitmap(1, btnCadCondPgmt.Glyph);
+    if Length(EdtNomeOperador.Text) > 0 then begin
+      btnCadOperador.Glyph.Assign(nil);
+      GetBitmap(1, btnCadOperador.Glyph)
+    end else begin
+      btnCadOperador.Glyph.Assign(nil);
+      GetBitmap(4, btnCadOperador.Glyph);
+    end;
+
+    if Length(edtNomeCliente.Text) > 0 then begin
+      btnCadCliente.Glyph.Assign(nil);
+      GetBitmap(1, btnCadCliente.Glyph)
+    end else begin
+      btnCadCliente.Glyph.Assign(nil);
+      GetBitmap(4, btnCadCliente.Glyph);
+    end;
+
+    if Length(edtNomeProduto.Text) > 0 then begin
+      BtnCadProd.Glyph.Assign(nil);
+      GetBitmap(1, BtnCadProd.Glyph)
+    end else begin
+      BtnCadProd.Glyph.Assign(nil);
+      GetBitmap(4, BtnCadProd.Glyph);
+    end;
+
+    if Length(edtNomeCondPgmt.Text) > 0 then begin
+      btnCadCondPgmt.Glyph.Assign(nil);
+      GetBitmap(1, btnCadCondPgmt.Glyph)
+    end else begin
+      btnCadCondPgmt.Glyph.Assign(nil);
+      GetBitmap(4, btnCadCondPgmt.Glyph);
+    end;
+
+    if Length(edtNomeFrmPgmt.Text) > 0 then begin
+      btnCadFrmPgmt.Glyph.Assign(nil);
+      GetBitmap(1, btnCadFrmPgmt.Glyph)
+    end else begin
+      btnCadFrmPgmt.Glyph.Assign(nil);
+      GetBitmap(4, btnCadFrmPgmt.Glyph);
+    end;
   end;
 end;
 
@@ -373,6 +743,12 @@ begin
     Inc(newID);
     CdsPDV.Next;
   end;
+end;
+
+procedure TFrm_PDV.BtnCadProdClick(Sender: TObject);
+begin
+  if (Length(Trim(EdtCodProduto.Text)) > 0) then Frm_principal.AbreTelaProduto(StrToInt(EdtCodProduto.Text))
+  else Frm_principal.AbreTelaProduto(0);
 end;
 
 procedure TFrm_PDV.VerifOperador;

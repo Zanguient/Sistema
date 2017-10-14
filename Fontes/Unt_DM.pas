@@ -194,8 +194,10 @@ begin
   db.ConnectParams.CharSet := 'WIN1252';
   db.LibraryName := 'fbclient.dll';
 
-  if getCampoINI('ConectarPorIP') = 'True' then db.DBName := getCampoINI('ServerIP') + '/3051:' + getCampoINI('DB')
-  else db.DBName := getCampoINI('ServerName') + '/3051:' + getCampoINI('DB');
+  if getCampoINI('ConectarPorIP') = 'True' then
+    db.DBName := getCampoINI('ServerIP') + '/3051:' + getCampoINI('DB')
+  else
+    db.DBName := getCampoINI('ServerName') + '/3051:' + getCampoINI('DB');
 
   try
     db.Connected := True;
@@ -410,10 +412,26 @@ begin
       Close;
       SelectSQL.Clear;
 
-      SelectSQL.Add('SELECT C.NOME, C.ENDER, C.NUMEMPRESA, C.BAIRRO, C.CNPJ, CI.NOME_CIDADE || ''-'' || CI.UF_CIDADE ');
-      SelectSQL.Add('AS CIDADEUF, C.FONE1, C.FONE2, COALESCE(CI.CEP_CIDADE, C.CEP) AS CEP, C.PRINTLOGO_PRINCIPAL, ');
-      SelectSQL.Add('C.PRINTDETALHES_PRINCIPAL, C.LOGO, C.TIPOTEMA, C.TIPOENQUADRAMENTOEMPRESA, CI.UF_CIDADE, CI.NOME_CIDADE ');
-      SelectSQL.Add('FROM CONFIG C LEFT JOIN CIDADES CI ON C.CODCIDADE = CI.COD_CIDADE');
+      SelectSQL.Add('SELECT');
+      SelectSQL.Add('C.NOME,');
+      SelectSQL.Add('C.ENDER,');
+      SelectSQL.Add('C.NUMEMPRESA,');
+      SelectSQL.Add('C.BAIRRO,');
+      SelectSQL.Add('C.CNPJ,');
+      SelectSQL.Add('CI.NOME_CIDADE || ''-'' || CI.UF_CIDADE AS CIDADEUF,');
+      SelectSQL.Add('C.FONE1,');
+      SelectSQL.Add('C.FONE2,');
+      SelectSQL.Add('COALESCE(CI.CEP_CIDADE, C.CEP) AS CEP,');
+      SelectSQL.Add('C.PRINTLOGO_PRINCIPAL,');
+      SelectSQL.Add('C.PRINTDETALHES_PRINCIPAL,');
+      SelectSQL.Add('C.LOGO,');
+      SelectSQL.Add('C.TIPOTEMA,');
+      SelectSQL.Add('C.TIPOENQUADRAMENTOEMPRESA,');
+      SelectSQL.Add('CI.UF_CIDADE,');
+      SelectSQL.Add('CI.NOME_CIDADE');
+      SelectSQL.Add('FROM');
+      SelectSQL.Add('CONFIG C LEFT JOIN CIDADES CI ON');
+      SelectSQL.Add('C.COD_IBGE = CI.CODIBGE_CIDADE');
 
       Open;
 

@@ -59,19 +59,28 @@ type
     procedure BtnBuscaClick(Sender: TObject);
     procedure DsBuscaClienteDataChange(Sender: TObject; Field: TField);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     TriggerFrm: TForm;
     TriggerConsulta: Boolean;
 
     procedure GerarRetorno(encontrouCod: Boolean);
+
   public
-    { Public declarations }
+    type RetornoConsulta = record
+      Cod: Integer;
+      Nome: String;
+    end;
+
+    var
+      ParamBusca: String;
+      Retorno: RetornoConsulta;
   end;
 
 var
   FormBuscador: TFormBuscador;
-  tipoBusca, retorno: Integer;
+  tipoBusca: Integer;
 
 implementation
 
@@ -129,13 +138,18 @@ begin
     end;
     Open;
 
-    // Contar Registros
-    LbRegistros.Caption := QryBuscaCliente.RecordCount.ToString;
+    if (RecordCount > 0) then begin
+      // Contar Registros
+      LbRegistros.Caption := QryBuscaCliente.RecordCount.ToString;
 
-    // Foco na primeira linha
-    QryBuscaCliente.First;
-    DbgBuscaCliente.SelectedField := DbgBuscaCliente.Columns[0].Field;
-    DbgBuscaCliente.SetFocus;
+      // Foco na primeira linha
+      QryBuscaCliente.First;
+      DbgBuscaCliente.SelectedField := DbgBuscaCliente.Columns[0].Field;
+      DbgBuscaCliente.SetFocus;
+    end else begin
+      EdtBusca.SelectAll;
+//      EdtBusca.SetFocus;
+    end;
   end;
 end;
 
@@ -226,13 +240,26 @@ begin
   end;
 end;
 
+procedure TFormBuscador.FormShow(Sender: TObject);
+begin
+  if not (ParamBusca.IsEmpty) then begin
+    EdtBusca.Text := ParamBusca;
+
+    if (StrToIntDef(ParamBusca, 0) = 0) then RbCod.Checked
+    else RbNomeCliente.Checked;
+
+    BtnBusca.Click;
+  end;
+end;
+
 procedure TFormBuscador.GerarRetorno(encontrouCod: Boolean);
 begin
-  if encontrouCod = True then begin
-    retorno := QryBuscaClienteCOD_CLIENTE.AsInteger;
+  if (encontrouCod = True) then begin
+    Retorno.Cod := QryBuscaClienteCOD_CLIENTE.AsInteger;
+    Retorno.Nome := QryBuscaClienteNOME_CLIENTE.AsString;
     FormBuscador.ModalResult := mrOk;
   end else begin
-    retorno := 0;
+    Retorno.Cod := 0;
     FormBuscador.ModalResult := mrCancel;
   end;
 end;

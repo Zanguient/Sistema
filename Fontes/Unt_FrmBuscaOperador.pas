@@ -3,117 +3,230 @@ unit Unt_FrmBuscaOperador;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids,
-  Vcl.DBGrids, Datasnap.DBClient, Vcl.Mask, Vcl.DBCtrls, FIBDataSet, pFIBDataSet, System.Actions,
-  Vcl.ActnList, Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.StdActns, FIBQuery, pFIBQuery,
-  FIBDatabase, pFIBDatabase, Unt_DM;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask, Vcl.DBCtrls,
+  FIBDataSet, pFIBDataSet;
 
 type
-  TBusca = (Operador);
-  TFrm_BuscaGen = class(TForm)
+  TFrm_BuscaOperador = class(TForm)
+    BtnBusca: TBitBtn;
+    DbgBuscaOperador: TDBGrid;
+    DsBuscaProduto: TDataSource;
+    EdtBusca: TEdit;
+    gbFiltro: TGroupBox;
+    RbCod: TRadioButton;
+    RbOperador: TRadioButton;
+    BtnSelecionar: TButton;
+    BtnCancelar: TButton;
+    LbTxtRegistros: TLabel;
+    LbRegistros: TLabel;
+    QryBuscaOperador: TpFIBDataSet;
+    QryBuscaOperadorCOD_VENDEDOR: TFIBIntegerField;
+    QryBuscaOperadorNOME_VENDEDOR: TFIBStringField;
+    QryBuscaOperadorSTATUS_VENDEDOR: TFIBStringField;
+    procedure EdtBuscaKeyPress(Sender: TObject; var Key: Char);
+    procedure BtnBuscaClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure QryBuscaOperadorTIPO_PRODUTOGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure DbgBuscaOperadorDblClick(Sender: TObject);
+    procedure DbgBuscaOperadorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure BtnSelecionarClick(Sender: TObject);
+    procedure BtnCancelarClick(Sender: TObject);
+    procedure QryBuscaOperadorCSTGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QryBuscaOperadorSTATUS_VENDEDORGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure FormShow(Sender: TObject);
 
-    rbgFiltro: TRadioGroup;
-    DBGrid1: TDBGrid;
-    pnlBotton: TPanel;
-    pnlBusca: TPanel;
-    pnlBtnTop: TPanel;
-    pnlWrapBtnTop: TPanel;
-    pnlWrapBtn2: TPanel;
-    btnBusca: TSpeedButton;
-    btnAtualizar: TBitBtn;
-    btnLimpar: TBitBtn;
-    btnCancelar: TBitBtn;
-    btnSelecionar: TBitBtn;
-    edtBusca: TEdit;
-    qryBuscaOperador: TpFIBDataSet;
-    qryBuscaOperadorCOD_VENDEDOR: TFIBIntegerField;
-    qryBuscaOperadorNOME_VENDEDOR: TFIBStringField;
-    qryBuscaOperadorSTATUS: TFIBStringField;
-    dsDbgOperador: TDataSource;
+  private
+    procedure RetornoForm(encontrou: Boolean = True);
 
-    private
-      procedure preencheDbg(fields: Array of String);
+  public
+    type RetornoConsulta = record
+        Cod: Integer;
+        Nome: String;
+      end;
 
-    public
-      Function buscar(filtro: String): Boolean;
-      Constructor Create(pCadBusca: TBusca; filtro: String = '');
-
-    published
-
+    var
+      ParamBusca: String;
+      Retorno: RetornoConsulta;
   end;
 
 var
-  Frm_BuscaGen: TFrm_BuscaGen;
-
+  Frm_BuscaOperador: TFrm_BuscaOperador;
 
 implementation
 
-Uses
-  UnitFuncoes;
+uses
+  Unt_DM, UnitFuncoes;
 
 {$R *.dfm}
 
-function TFrm_BuscaGen.buscar(filtro: String): Boolean;
+procedure TFrm_BuscaOperador.BtnBuscaClick(Sender: TObject);
+var retorno: String;
 begin
-  with getNewQuery(False) do begin
+  with QryBuscaOperador do begin
+    Close;
+    SelectSQL.Clear;
+
+    SelectSQL.Add('SELECT');
+    SelectSQL.Add('V.COD_VENDEDOR,');
+    SelectSQL.Add('V.NOME_VENDEDOR,');
+    SelectSQL.Add('V.STATUS_VENDEDOR');
+    SelectSQL.Add('FROM VENDEDORES V');
+
     try
-      Close;
-      SQL.Clear;
-
-
-
-      if not (filtro.IsEmpty) then begin
-        if (rbgFiltro.ItemIndex = 0) then begin
-          Conditions.AddMyCondition('COD_VENDEDOR', Format('V.COD_VENDEDOR = %d', [StrToInt(filtro)]))
-        end else if (rbgFiltro.ItemIndex = 1) then begin
-          Conditions.AddMyCondition('NOME_VENDEDOR', Format('V.NOME_VENDEDOR = %%s%', [filtro]));
+      if Length(Trim(EdtBusca.Text)) > 0 then begin
+        if (RbCod.Checked = True) then begin
+          SelectSQL.Add('WHERE V.COD_VENDEDOR = ' + EdtBusca.Text)
+        end else begin
+          SelectSQL.Add('WHERE UPPER(V.NOME_VENDEDOR COLLATE WIN_PTBR) LIKE ' +
+            QuotedStr('%' + UpperCase(RemoveAcentos(EdtBusca.Text)) + '%'));
         end;
       end;
 
-      ExecQuery;
-
-      if (RecordCount <= 0) then Exit;
-
+      SelectSQL.Add('ORDER BY V.COD_VENDEDOR');
 
     except
-      on e: Exception do begin
+      on E: exception do begin
+        ShowMessage('Erro ao executar busca. Erro: '+e.Message);
         Transaction.Rollback;
-        raise Exception.Create('Erro ao efetuar Busca #13 ERRO: ' + e.Message);
+        Close;
+        Exit;
       end;
     end;
+    Open;
+
+    // Contar Registros
+    LbRegistros.Caption := QryBuscaOperador.RecordCount.ToString;
+
+    if (QryBuscaOperador.RecordCount > 0) then begin
+      // Foco na primeira linha
+      QryBuscaOperador.First;
+      DbgBuscaOperador.SelectedField := DbgBuscaOperador.Columns[0].Field;
+      DbgBuscaOperador.SetFocus;
+    end else begin
+      EdtBusca.SelectAll;
+    end;
+
   end;
 end;
 
-constructor TFrm_BuscaGen.Create(pCadBusca: TBusca; filtro: String = '');
+procedure TFrm_BuscaOperador.BtnCancelarClick(Sender: TObject);
 begin
-  if not (filtro.IsEmpty) then begin
-    edtBusca.Text := filtro;
-  end;
-  FTipoCadBusca := pCadBusca;
+  RetornoForm(False);
 end;
 
-procedure TFrm_BuscaGen.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFrm_BuscaOperador.BtnSelecionarClick(Sender: TObject);
 begin
-  if (Key = VK_ESCAPE) then begin
-    Close;
-  end else if (Key = VK_F5) then begin
-    btnAtualizar.Click;
+  RetornoForm();
+end;
+
+procedure TFrm_BuscaOperador.DbgBuscaOperadorDblClick(Sender: TObject);
+begin
+  RetornoForm();
+end;
+
+procedure TFrm_BuscaOperador.DbgBuscaOperadorKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    RetornoForm();
   end;
 end;
 
-procedure TFrm_BuscaGen.preencheDbg(fields: array of String);
+procedure TFrm_BuscaOperador.EdtBuscaKeyPress(Sender: TObject; var Key: Char);
 var
-  I: Integer;
+  i: Integer;
 begin
-  if (FTipoCadBusca = TBusca.Operador) then begin
-    for I := 0 to Length(fields) do begin
-      if (fields[i].Equals('COD_VENDEDOR')) then begin
-        DBGrid1.Columns.Add();
+  if (Key = #13) then
+  begin
+    Key := #0;
+    BtnBusca.Click;
+    Exit;
+  end;
 
+  if Length(Trim(EdtBusca.Text)) = 0 then
+  begin
+    if not (Key in ['0' .. '9']) then RbOperador.Checked := True
+    else RbCod.Checked := True;
+    Exit;
+  end;
 
+  if Length(Trim(EdtBusca.Text)) > 0 then
+  begin
+    if (RbCod.Checked) then
+    begin
+      for i := 1 to Length(Trim(EdtBusca.Text)) do
+      begin
+        if not(EdtBusca.Text[i] in ['0' .. '9']) then RbOperador.Checked := True;
       end;
     end;
+  end;
+
+end;
+
+procedure TFrm_BuscaOperador.FormCreate(Sender: TObject);
+begin
+  RbOperador.Checked := True;
+end;
+
+procedure TFrm_BuscaOperador.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Key = #27) then
+  begin
+    Key := #0;
+    RetornoForm(False);
+  end;
+end;
+
+procedure TFrm_BuscaOperador.FormShow(Sender: TObject);
+begin
+  if not (ParamBusca.IsEmpty) then begin
+    EdtBusca.Text := ParamBusca;
+
+    if (StrToIntDef(ParamBusca, 0) = 0) then RbCod.Checked
+    else RbOperador.Checked;
+
+    BtnBusca.Click;
+  end;
+end;
+
+procedure TFrm_BuscaOperador.QryBuscaOperadorCSTGetText(Sender: TField;
+  var Text: string; DisplayText: Boolean);
+begin
+  if Text <> '' then begin
+    Text := dm.getNomeCST(StrToInt(Text), False);
+  end;
+end;
+
+procedure TFrm_BuscaOperador.QryBuscaOperadorSTATUS_VENDEDORGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  if (Sender.AsString = 'A') then
+    Text := 'Ativo'
+  else if (Sender.AsString = 'I') then
+    Text := 'Inativo';
+end;
+
+procedure TFrm_BuscaOperador.QryBuscaOperadorTIPO_PRODUTOGetText(Sender: TField;
+  var Text: string; DisplayText: Boolean);
+begin
+  if Text = '0' then Text := 'Inativo'
+  else if Text = '1' then Text := 'Normal';
+end;
+
+procedure TFrm_BuscaOperador.RetornoForm(encontrou: Boolean);
+begin
+  if encontrou = True then begin
+    Retorno.Cod := QryBuscaOperadorCOD_VENDEDOR.AsInteger;
+    Retorno.Nome := QryBuscaOperadorNOME_VENDEDOR.AsString;
+    Frm_BuscaOperador.ModalResult := mrOk;
+  end else begin
+    Retorno.Cod := 0;
+    Frm_BuscaOperador.ModalResult := mrCancel;
   end;
 end;
 
