@@ -22,7 +22,7 @@ uses
   Unt_FrmStrings in 'Unt_FrmStrings.pas' {Frm_Strings},
   UnitCarregar in 'UnitCarregar.pas' {FormCarregar},
   UnitBuscarOp in 'UnitBuscarOp.pas' {FormBuscarOp},
-  UnitCadOper in 'UnitCadOper.pas' {FormCadOper},
+  Unt_FrmCadOperador in 'Unt_FrmCadOperador.pas' {FrmCadOperador},
   Unt_FrmBusca in 'Unt_FrmBusca.pas' {Frm_Busca},
   Unt_FrmBck in 'Unt_FrmBck.pas' {Frm_Bck},
   Unt_DM in 'Unt_DM.pas' {dm: TDataModule},
@@ -30,7 +30,7 @@ uses
   Unt_Dados in 'Unt_Dados.pas' {$R *.res},
   UnitConstants in 'UnitConstants.pas',
   Unt_PDV in 'Unt_PDV.pas' {Frm_PDV},
-  UnitFuncoes in 'UnitFuncoes.pas' {$R *.res},
+  UntFuncoes in '..\Outros\UntFuncoes.pas' {$R *.res},
   Unt_FrmBuscaGenerica in 'Unt_FrmBuscaGenerica.pas' {Frm_BuscaGen},
   Unt_FrmBuscaOperador in 'Unt_FrmBuscaOperador.pas' {Frm_BuscaOperador};
 

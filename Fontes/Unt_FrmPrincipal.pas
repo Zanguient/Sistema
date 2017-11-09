@@ -6,8 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls,
   Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.Buttons, Vcl.Themes, Vcl.ExtCtrls, VCLTee.TeCanvas,
   System.ImageList, Vcl.ImgList, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage, Vcl.ToolWin, Vcl.ComCtrls, ACBrBase,
-  ACBrValidador, Vcl.Imaging.GIFImg, ShellAPI, Clipbrd, System.Actions,
-  Vcl.ActnList, IB_Services, Unt_FrmCadGrupo;
+  ACBrValidador, Vcl.Imaging.GIFImg, ShellAPI, Clipbrd, System.Actions, Vcl.ActnList, IB_Services, Unt_FrmCadGrupo,
+  MidasLib, Unt_FrmCadOperador;
 
 type
   TFrm_principal = class(TForm)
@@ -113,11 +113,13 @@ type
     procedure AbreTelaCliente(Cod: Integer);
     procedure AbreTelaProduto(Cod: Integer);
     procedure AbreTelaCidade(Cod: Integer);
+    procedure AbreTelaOperador(Cod: Integer);
     procedure PreencheOperador;
 
     function AbreTelaBuscaCidade: String;
     function AbreTelaBuscaCliente: String;
     function AbreTelaBuscaProduto: String;
+    function AbreTelaBuscaOPerador: String;
 
   end;
 
@@ -130,8 +132,8 @@ implementation
 
 uses Unt_FrmListaClientes, UnitListCidades, Unt_FrmCadCidade, Unt_FrmConfigGeral, UnitConstants,
   Unt_DM, UnitTrocaOperador, UnitLogin, Unt_FrmCadProduto, UnitCadOper, UnitPDV, UnitFuncoes,
-  Unt_FrmCadCliente, Unt_FrmBuscaCidade,Unt_FrmBuscaCliente, Unt_FrmBuscaProduto, Unt_FrmBck,
-  Unt_Dados, Unt_FrmStrings, Unt_PDV;
+  Unt_FrmCadCliente, Unt_FrmBuscaCidade,Unt_FrmBuscaCliente, Unt_FrmBuscaProduto, Unt_FrmBuscaOperador,
+  Unt_FrmBck, Unt_Dados, Unt_FrmStrings, Unt_PDV;
 
 {$R *.dfm}
 
@@ -160,6 +162,20 @@ begin
     end;
   finally
     FreeAndNil(FormBuscador);
+  end;
+end;
+
+function TFrm_principal.AbreTelaBuscaOPerador: String;
+begin
+  Result := '';
+  try
+    with Unt_FrmBuscaOperador.Frm_BuscaOperador do begin
+      if (Frm_BuscaOperador = nil) then Application.CreateForm(TFrm_BuscaOperador, Frm_BuscaOperador);
+      ShowModal();
+      if Frm_BuscaOperador.ModalResult = mrOk then Result := retorno.Cod.ToString;
+    end;
+  finally
+    FreeAndNil(Frm_BuscaOperador);
   end;
 end;
 
@@ -200,6 +216,19 @@ begin
     end;
   finally
     FreeAndNil(FormCadastroCliente);
+  end;
+end;
+
+procedure TFrm_principal.AbreTelaOperador(Cod: Integer);
+begin
+  try
+    with FrmCadOperador do begin
+      if (FrmCadOperador = nil) then Application.CreateForm(TFrmCadOperador, FrmCadOperador);
+      CodOper := Cod;
+      ShowModal();
+    end;
+  finally
+    FreeAndNil(FrmCadOperador);
   end;
 end;
 
@@ -378,7 +407,7 @@ end;
 
 procedure TFrm_principal.Operador1Click(Sender: TObject);
 begin
-  FormCadOper.ShowModal;
+  AbreTelaOperador(0);
 end;
 
 procedure TFrm_principal.SbSairClick(Sender: TObject);

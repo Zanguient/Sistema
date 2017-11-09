@@ -7,7 +7,7 @@ uses
   Data.DBXFirebird, Data.SqlExpr, Datasnap.Provider, Datasnap.DBClient,
   Data.DBXOdbc, FIBDatabase, pFIBDatabase, FIBDataSet, pFIBDataSet, Vcl.Dialogs,
   Vcl.Forms, IniFiles, Winsock, FIBQuery, pFIBQuery, System.Types, Winapi.Windows,
-  Vcl.Themes, Vcl.Controls, System.Generics.Collections;
+  Vcl.Themes, Vcl.Controls, System.Generics.Collections, UntFuncoes;
 
 type
   Tdm = class(TDataModule)
@@ -225,7 +225,7 @@ begin
         Result := True;
       except
         on E: Exception do begin
-          ShowMessage('Ocorreu erro ao gravar arquivo INI ' + #13 + 'ERRO: ' + E.Message);
+          Result := False;
         end;
       end;
     end;
@@ -235,8 +235,6 @@ end;
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   ReportMemoryLeaksOnShutdown := True; //Listen to Memory Leaks
-
-
 
   pathSistema := 'C:\Users\' + GetUsuarioLogado + '\Documents\LinSoft';
   pathBin := pathSistema + '\Bin';

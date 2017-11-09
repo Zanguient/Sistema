@@ -1,36 +1,44 @@
-unit UnitCadOper;
+unit Unt_FrmCadOperador;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.Buttons, Unt_DM, UnitBuscarOp, UnitBuscarCid,
-  Unt_FrmCadCidade, UnitConstants;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Unt_DM, UnitBuscarOp, UnitBuscarCid,
+  Unt_FrmCadCidade, UnitConstants, ComboBoxKey, Vcl.ExtCtrls, Data.DB, FIBDataSet, pFIBDataSet,
+  Unt_FrmBuscaOperador;
 
 type
-  TFormCadOper = class(TForm)
+  TFrmCadOperador = class(TForm)
+    LbOperacao: TLabel;
+    PnDown: TPanel;
+    BtnCancelar: TButton;
+    BtnDeletar: TButton;
+    BtnSalvar: TButton;
+    GroupBox2: TGroupBox;
     Label7: TLabel;
     Label3: TLabel;
-    SbBuscar: TSpeedButton;
+    btnBuscaOper: TSpeedButton;
+    Label2: TLabel;
     EdtNome: TEdit;
-    BtnSalvar: TButton;
-    BtnDeletar: TButton;
     EdtCod: TEdit;
-    BtnCancelar: TButton;
-    Label4: TLabel;
-    Label5: TLabel;
-    EdtEmail: TEdit;
     GroupBox1: TGroupBox;
-    sbProcurar: TSpeedButton;
+    btnBuscaCid: TSpeedButton;
     EdtNomeCid: TEdit;
     EdtCodCid: TEdit;
-    Label2: TLabel;
-    EdtPass: TEdit;
-    CbIsInativo: TCheckBox;
+    EdtSenha: TEdit;
+    cmbStatus: TComboBoxKey;
+    Label1: TLabel;
+    QryOperador: TpFIBDataSet;
+    DsOperador: TDataSource;
+    QryOperadorCOD_VENDEDOR: TFIBIntegerField;
+    QryOperadorNOME_VENDEDOR: TFIBStringField;
+    QryOperadorCOD_CIDADE: TFIBIntegerField;
+    QryOperadorNOME_CIDADE: TFIBStringField;
+    QryOperadorUF_CIDADE: TFIBStringField;
+    QryOperadorSTATUS_VENDEDOR: TFIBStringField;
     procedure EdtCodExit(Sender: TObject);
     procedure EdtCodKeyPress(Sender: TObject; var Key: Char);
-    procedure EdtCodCidKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure BuscarDB;
     procedure BtnSalvarClick(Sender: TObject);
@@ -38,10 +46,9 @@ type
     procedure BtnDeletarClick(Sender: TObject);
     procedure EdtCodCidExit(Sender: TObject);
     procedure EdtCodKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure SbBuscarClick(Sender: TObject);
-    procedure EdtCodCidKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure sbProcurarClick(Sender: TObject);
+    procedure btnBuscaOperClick(Sender: TObject);
+    procedure EdtCodCidKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnBuscaCidClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
   private
@@ -58,35 +65,37 @@ type
     procedure ConfigIni(pIndx: Integer);
     procedure ShowModal(pCod: String); Overload;
     procedure ShowModal; Overload;
+    procedure findCod(Cod: Integer);
   end;
 
 var
-  FormCadOper: TFormCadOper;
+  FrmCadOperador: TFrmCadOperador;
   iIndxTipo: Integer;
+  CodOper: Integer;
 
 implementation
 
 {$R *.dfm}
 
-Uses UnitFuncoes;
+Uses UntFuncoes, Unt_FrmPrincipal;
 
-procedure TFormCadOper.BtnCancelarClick(Sender: TObject);
+procedure TFrmCadOperador.BtnCancelarClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormCadOper.BtnDeletarClick(Sender: TObject);
+procedure TFrmCadOperador.BtnDeletarClick(Sender: TObject);
 begin
   if EdtCod.Text = '0' then exit;
 end;
 
-procedure TFormCadOper.BtnSalvarClick(Sender: TObject);
+procedure TFrmCadOperador.BtnSalvarClick(Sender: TObject);
 begin
   if EdtCod.Text = '0' then
-    if MsgFixa(UnitFuncoes.tMsgErroPK) then Exit;
+    if MsgFixa(tMsgErroPK) then Exit;
 end;
 
-procedure TFormCadOper.BuscarCidade;
+procedure TFrmCadOperador.BuscarCidade;
 begin
   if ((Trim(EdtCodCid.Text) = '') and (Trim(EdtNomeCid.Text) <> '')) then
 
@@ -103,7 +112,7 @@ begin
   end;
 end;
 
-procedure TFormCadOper.BuscarDB;
+procedure TFrmCadOperador.BuscarDB;
 var
   count: Integer;
   iterate: Boolean;
@@ -111,61 +120,38 @@ begin
   if EdtCod.Text = UnitConstants.EDT_AUTOMATICO then exit;
 end;
 
-procedure TFormCadOper.EdtCodCidExit(Sender: TObject);
+procedure TFrmCadOperador.EdtCodCidExit(Sender: TObject);
 begin
   BuscarCidade;
 end;
 
-procedure TFormCadOper.EdtCodCidKeyDown(Sender: TObject; var Key: Word;
+procedure TFrmCadOperador.EdtCodCidKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = VK_F3) then
-  begin
-    UnitBuscarCid.IndxCidade := 4;
-    FormBuscarCid.ShowModal;
-  end
-  else if (Key = VK_ADD) then FormCadCidade.ShowModal;
+  if (Key = VK_F3) then btnBuscaCid.Click;
 end;
 
-procedure TFormCadOper.EdtCodCidKeyPress(Sender: TObject; var Key: Char);
-begin
-  if (Key = #13) then
-  begin
-    Key := #0;
-    FormCadOper.Perform(WM_NEXTDLGCTL, 0, 0);
-  end;
-end;
-
-procedure TFormCadOper.EdtCodExit(Sender: TObject);
+procedure TFrmCadOperador.EdtCodExit(Sender: TObject);
 begin
   ConfigIni(1);
   BuscarDB;
 end;
 
-procedure TFormCadOper.EdtCodKeyDown(Sender: TObject; var Key: Word;
+procedure TFrmCadOperador.EdtCodKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = VK_F3) then
-  begin
-    FormBuscarOp.ShowModal(self);
-  end;
+  if (Key = VK_F3) then btnBuscaOper.Click;
 end;
 
-procedure TFormCadOper.EdtCodKeyPress(Sender: TObject; var Key: Char);
+procedure TFrmCadOperador.EdtCodKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = #13) then
-  begin
-    Key := #0;
-    FormCadOper.Perform(WM_NEXTDLGCTL, 0, 0);
-  end;
-
   if not(Key in [#8, '0' .. '9']) then
   begin
     Key := #0;
   end;
 end;
 
-procedure TFormCadOper.EscPresionado;
+procedure TFrmCadOperador.EscPresionado;
 begin
   if EdtCod.Text = 'Automático' then
   begin
@@ -182,12 +168,44 @@ begin
   end;
 end;
 
-procedure TFormCadOper.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFrmCadOperador.findCod(Cod: Integer);
+var i: Integer;
+begin
+  with QryOperador do begin
+    Close;
+    ParamByName('COD').AsInteger := Cod;
+    Open;
+
+    if IsEmpty then begin  //Cadastrar Novo
+      Append; // Muda o estado da Qry para Add novo registro;
+
+      //Limpar Campos
+      EdtCod.Clear;
+      EdtNome.Clear;
+      EdtSenha.Clear;
+      EdtCodCid.Clear;
+      cmbStatus.Clear;
+      LbOperacao.Caption := 'Cadastrando Operador';
+      EdtCod.Text := 'Automático';
+
+    end else begin // Editar Cadastrado
+      Edit; // Muda o estado da Qry para Editar registro;
+      LbOperacao.Caption := 'Editando Operador ' + QryOperadorCOD_VENDEDOR.AsString;
+    end;
+
+    EdtCod.Enabled := True;
+    EdtCod.SelectAll;
+    EdtCod.SetFocus;
+
+  end;
+ end;
+
+procedure TFrmCadOperador.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   LimparCampos;
 end;
 
-procedure TFormCadOper.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TFrmCadOperador.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #27 then
   begin
@@ -196,18 +214,18 @@ begin
   end;
 end;
 
-procedure TFormCadOper.FormShow(Sender: TObject);
+procedure TFrmCadOperador.FormShow(Sender: TObject);
 begin
   ConfigIni(iIndxTipo);
 end;
 
-procedure TFormCadOper.ConfigIni(pIndx: Integer);
+procedure TFrmCadOperador.ConfigIni(pIndx: Integer);
 begin
   // pIndx = 0 -> Config. Ini. Abrir CadOP;
   // pIndx = 1 -> Config. ao Sair do EdtCod;
   if pIndx = 0 then
   begin
-    CbIsInativo.Checked := False;
+    //CbIsInativo.Checked := False;
     EdtCod.Enabled := True;
     EdtCod.Text := 'Automático';
     EdtCod.SetFocus;
@@ -223,24 +241,34 @@ begin
   end;
 end;
 
-procedure TFormCadOper.SbBuscarClick(Sender: TObject);
+procedure TFrmCadOperador.btnBuscaOperClick(Sender: TObject);
+var retorno: String;
 begin
-  FormBuscarOp.ShowModal(Self);
+  retorno := Unt_FrmPrincipal.Frm_principal.AbreTelaBuscaOPerador;
+  if (retorno <> '') then begin
+    EdtCod.Text := retorno;
+    EdtCod.SelectAll;
+    findCod(Frm_BuscaOperador.Retorno.Cod);
+  end;
 end;
 
-procedure TFormCadOper.sbProcurarClick(Sender: TObject);
+procedure TFrmCadOperador.btnBuscaCidClick(Sender: TObject);
+var retorno: String;
 begin
-  UnitBuscarCid.IndxCidade := 4;
-  FormBuscarCid.ShowModal;
+  retorno := Unt_FrmPrincipal.Frm_principal.AbreTelaBuscaCidade;
+  if (retorno <> '') then begin
+    EdtCodCid.Text := retorno;
+    EdtNomeCid.Text := getCampoSelect('SELECT C.NOME_CIDADE FROM CIDADES C WHERE C.COD_CIDADE = ' + EdtCodCid.Text);
+  end;
 end;
 
-procedure TFormCadOper.ShowModal;
+procedure TFrmCadOperador.ShowModal;
 begin
   iIndxTipo := 0;
   inherited ShowModal;
 end;
 
-procedure TFormCadOper.ShowModal(pCod: String);
+procedure TFrmCadOperador.ShowModal(pCod: String);
 begin
   EdtCod.Text := pCod;
   iIndxTipo := 1;
@@ -248,7 +276,7 @@ begin
   inherited ShowModal;
 end;
 
-function TFormCadOper.VerifCamposObgt: Boolean;
+function TFrmCadOperador.VerifCamposObgt: Boolean;
 begin
   if (Length(Trim(EdtNome.Text)) = 0) then
   begin
@@ -271,10 +299,10 @@ begin
     ShowMessage('É obrigatório informar a cidade do operador');
     Result := False;
   end
-  else if (Length(Trim(EdtPass.Text)) = 0) then
+  else if (Length(Trim(EdtSenha.Text)) = 0) then
   begin
-    EdtPass.SetFocus;
-    EdtPass.SelectAll;
+    EdtSenha.SetFocus;
+    EdtSenha.SelectAll;
     ShowMessage('É obrigatório informar a senha do operador');
     Result := False;
   end
@@ -284,7 +312,7 @@ begin
   end;
 end;
 
-function TFormCadOper.VerifUpdate: Boolean;
+function TFrmCadOperador.VerifUpdate: Boolean;
 var
   status: Integer;
 begin
@@ -332,7 +360,7 @@ begin
 //  end;
 end;
 
-function TFormCadOper.HasCamposPreenchidos: Boolean;
+function TFrmCadOperador.HasCamposPreenchidos: Boolean;
 var
   i: Integer;
 begin
@@ -353,7 +381,7 @@ begin
   end;
 end;
 
-procedure TFormCadOper.LimparCampos;
+procedure TFrmCadOperador.LimparCampos;
 var
   i: Integer;
 begin

@@ -18,6 +18,7 @@ procedure AutoSizeDBGrid(const xDBGrid: TDBGrid);
 procedure FocarComponente(pFrm: TForm);
 procedure LimpaCampos(pFrm: TForm);
 procedure MudaCorEditReadOnly(CorReadOnly: TColor; CorTxtReadOnly: TColor; EditArray: Array of TEdit);
+procedure CriaArqvLog(texto: String);
 
 function MsgCompleta(Msg, Title, MsgBtn1, MsgBtn2: String; tipoAction: TTaskDialogIcon; temBeep, repetir: Boolean): Boolean;
 function MsgFixa(tipoMsg: TTipoMsg; msg : String = ''): Boolean;
@@ -65,6 +66,21 @@ begin
     EditArray[i].Color := CorReadOnly;
     EditArray[i].Font.Color := CorTxtReadOnly;
   end;
+end;
+
+procedure CriaArqvLog(texto: String);
+var
+  NomeArqv: String;
+  TF: TextFile;
+begin
+  NomeArqv := ChangeFileExt(Application.ExeName, '.log');
+  AssignFile(TF, NomeArqv);
+
+  //Rewrite(TF);
+
+  Append(TF);
+  Writeln(TF, texto);
+  CloseFile(TF);
 end;
 
 function FormataPalavra(palavra: String): string;
