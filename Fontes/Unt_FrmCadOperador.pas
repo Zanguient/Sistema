@@ -5,64 +5,68 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Unt_DM, UnitBuscarOp, UnitBuscarCid,
-  Unt_FrmCadCidade, UnitConstants, ComboBoxKey, Vcl.ExtCtrls, Data.DB, FIBDataSet, pFIBDataSet,
-  Unt_FrmBuscaOperador;
+  Unt_FrmCadCidade, UnitConstants, Vcl.ExtCtrls, Data.DB, FIBDataSet, pFIBDataSet,
+  Unt_FrmBuscaOperador, Vcl.Mask, Vcl.DBCtrls, ComboBoxKey;
 
 type
   TFrmCadOperador = class(TForm)
     LbOperacao: TLabel;
-    PnDown: TPanel;
-    BtnCancelar: TButton;
-    BtnDeletar: TButton;
-    BtnSalvar: TButton;
     GroupBox2: TGroupBox;
     Label7: TLabel;
     Label3: TLabel;
     btnBuscaOper: TSpeedButton;
     Label2: TLabel;
-    EdtNome: TEdit;
-    EdtCod: TEdit;
     GroupBox1: TGroupBox;
     btnBuscaCid: TSpeedButton;
-    EdtNomeCid: TEdit;
-    EdtCodCid: TEdit;
-    EdtSenha: TEdit;
-    cmbStatus: TComboBoxKey;
     Label1: TLabel;
     QryOperador: TpFIBDataSet;
     DsOperador: TDataSource;
     QryOperadorCOD_VENDEDOR: TFIBIntegerField;
     QryOperadorNOME_VENDEDOR: TFIBStringField;
-    QryOperadorCOD_CIDADE: TFIBIntegerField;
     QryOperadorNOME_CIDADE: TFIBStringField;
     QryOperadorUF_CIDADE: TFIBStringField;
     QryOperadorSTATUS_VENDEDOR: TFIBStringField;
-    procedure EdtCodExit(Sender: TObject);
-    procedure EdtCodKeyPress(Sender: TObject; var Key: Char);
+    EdtSenha: TDBEdit;
+    EdtNome: TDBEdit;
+    EdtNomeCid: TDBEdit;
+    EdtCodCid: TDBEdit;
+    QryOperadorSENHA_VENDEDOR: TFIBStringField;
+    QryOperadorSEXO_VENDEDOR: TFIBBooleanField;
+    QryOperadorCPF_VENDEDOR: TFIBStringField;
+    pnButtons: TPanel;
+    btnGravar: TBitBtn;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    EdtCod: TEdit;
+    CmbStatus: TComboBox;
+    QryOperadorCODCIDADE_VENDEDOR: TFIBIntegerField;
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure BuscarDB;
-    procedure BtnSalvarClick(Sender: TObject);
-    procedure BtnCancelarClick(Sender: TObject);
-    procedure BtnDeletarClick(Sender: TObject);
-    procedure EdtCodCidExit(Sender: TObject);
-    procedure EdtCodKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnBuscaOperClick(Sender: TObject);
-    procedure EdtCodCidKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnBuscaCidClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure EdtCodCidKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure EdtCodKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure EdtCodKeyPress(Sender: TObject; var Key: Char);
+    procedure EdtCodExit(Sender: TObject);
+    procedure EdtNomeExit(Sender: TObject);
+    procedure EdtCodCidExit(Sender: TObject);
   private
     { Private declarations }
     procedure EscPresionado;
-    function HasCamposPreenchidos: Boolean;
+    procedure TestaCampos;
     procedure LimparCampos;
+    procedure ConfigIni(pIndx: Integer);
+    procedure BuscarDB;
+
+    function HasCamposPreenchidos: Boolean;
     function VerifUpdate: Boolean;
     function VerifCamposObgt: Boolean;
 
   public
     { Public declarations }
-    procedure BuscarCidade;
-    procedure ConfigIni(pIndx: Integer);
     procedure ShowModal(pCod: String); Overload;
     procedure ShowModal; Overload;
     procedure findCod(Cod: Integer);
@@ -79,39 +83,6 @@ implementation
 
 Uses UntFuncoes, Unt_FrmPrincipal;
 
-procedure TFrmCadOperador.BtnCancelarClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TFrmCadOperador.BtnDeletarClick(Sender: TObject);
-begin
-  if EdtCod.Text = '0' then exit;
-end;
-
-procedure TFrmCadOperador.BtnSalvarClick(Sender: TObject);
-begin
-  if EdtCod.Text = '0' then
-    if MsgFixa(tMsgErroPK) then Exit;
-end;
-
-procedure TFrmCadOperador.BuscarCidade;
-begin
-  if ((Trim(EdtCodCid.Text) = '') and (Trim(EdtNomeCid.Text) <> '')) then
-
-  if ((Length(Trim(EdtCodCid.Text)) = 0) and (Length(Trim(EdtNomeCid.Text)) = 0))
-  then
-  begin
-    Exit;
-  end;
-
-  if ((Length(EdtCodCid.Text) > 0) and (Length(EdtNomeCid.Text) = 0)) then
-  begin
-    EdtCodCid.SetFocus;
-    EdtCodCid.SelectAll;
-  end;
-end;
-
 procedure TFrmCadOperador.BuscarDB;
 var
   count: Integer;
@@ -121,34 +92,46 @@ begin
 end;
 
 procedure TFrmCadOperador.EdtCodCidExit(Sender: TObject);
+var
+  codAux: integer;
+  nomeAux: String;
 begin
-  BuscarCidade;
+  codAux := StrToIntDef(EdtCodCid.Text,0);
+  nomeAux := getCampoSelect('SELECT C.NOME_CIDADE FROM CIDADES C WHERE C.COD_CIDADE = ' +  IntToStr(codAux));
+
+  if (nomeAux <> '') then begin
+    QryOperadorNOME_CIDADE.AsString := nomeAux;
+    QryOperadorCODCIDADE_VENDEDOR.AsInteger := codAux;
+  end else begin
+    QryOperadorCODCIDADE_VENDEDOR.Clear;
+    QryOperadorNOME_CIDADE.Clear;
+  end;
+
 end;
 
-procedure TFrmCadOperador.EdtCodCidKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFrmCadOperador.EdtCodCidKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_F3) then btnBuscaCid.Click;
 end;
 
 procedure TFrmCadOperador.EdtCodExit(Sender: TObject);
 begin
-  ConfigIni(1);
-  BuscarDB;
+  (Sender as TEdit).Enabled := False;
 end;
 
-procedure TFrmCadOperador.EdtCodKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFrmCadOperador.EdtCodKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_F3) then btnBuscaOper.Click;
 end;
 
 procedure TFrmCadOperador.EdtCodKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not(Key in [#8, '0' .. '9']) then
-  begin
-    Key := #0;
-  end;
+//  if not(Key in [#8, #13, #27, '0' .. '9']) then Key := #0;
+end;
+
+procedure TFrmCadOperador.EdtNomeExit(Sender: TObject);
+begin
+  (Sender as TDBEdit).Text := FormataPalavra((Sender as TDBEdit).Text);
 end;
 
 procedure TFrmCadOperador.EscPresionado;
@@ -176,27 +159,38 @@ begin
     ParamByName('COD').AsInteger := Cod;
     Open;
 
-    if IsEmpty then begin  //Cadastrar Novo
+    if IsEmpty then begin // Cadastrar
       Append; // Muda o estado da Qry para Add novo registro;
+
+      //Enable Campos
+      if not (EdtCodCid.Enabled) then EdtCodCid.Enabled :=True;
+      if not (EdtCod.Enabled) then EdtCod.Enabled :=True;
 
       //Limpar Campos
       EdtCod.Clear;
       EdtNome.Clear;
       EdtSenha.Clear;
       EdtCodCid.Clear;
-      cmbStatus.Clear;
+      cmbStatus.ItemIndex := 0;
+
+      //Setar Campos Default
       LbOperacao.Caption := 'Cadastrando Operador';
       EdtCod.Text := 'Automático';
 
-    end else begin // Editar Cadastrado
+    end else begin // Editar
       Edit; // Muda o estado da Qry para Editar registro;
-      LbOperacao.Caption := 'Editando Operador ' + QryOperadorCOD_VENDEDOR.AsString;
+      LbOperacao.Caption := 'Editando Operador ' + Self.QryOperadorCOD_VENDEDOR.AsString;
+      EdtCod.Text := Self.QryOperadorCOD_VENDEDOR.AsString;
+
+      if (Self.QryOperadorSTATUS_VENDEDOR.AsString = 'A') then CmbStatus.ItemIndex := 0
+      else if (Self.QryOperadorSTATUS_VENDEDOR.AsString = 'I') then CmbStatus.ItemIndex := 1
+      else CmbStatus.ItemIndex := -1;
+
     end;
 
     EdtCod.Enabled := True;
     EdtCod.SelectAll;
     EdtCod.SetFocus;
-
   end;
  end;
 
@@ -205,33 +199,40 @@ begin
   LimparCampos;
 end;
 
+procedure TFrmCadOperador.FormCreate(Sender: TObject);
+begin
+ QryOperador.UpdateTransaction := getNewTrans;
+end;
+
 procedure TFrmCadOperador.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-  if Key = #27 then
+  if (Key = #13) then
   begin
-    Key := #0;
-    EscPresionado;
+    Key:= #0;
+    Self.Perform(WM_NEXTDLGCTL, 0, 0);
+  end else if (Key = #27) then begin
+    if QryOperador.State = dsEdit then findCod(0)
+    else Close;
   end;
 end;
 
 procedure TFrmCadOperador.FormShow(Sender: TObject);
 begin
-  ConfigIni(iIndxTipo);
+  findCod(CodOper);
 end;
 
 procedure TFrmCadOperador.ConfigIni(pIndx: Integer);
 begin
   // pIndx = 0 -> Config. Ini. Abrir CadOP;
   // pIndx = 1 -> Config. ao Sair do EdtCod;
-  if pIndx = 0 then
+  if (pIndx = 0) then
   begin
-    //CbIsInativo.Checked := False;
     EdtCod.Enabled := True;
     EdtCod.Text := 'Automático';
     EdtCod.SetFocus;
     EdtCod.SelectAll;
   end
-  else if pIndx = 1 then
+  else if (pIndx = 1) then
   begin
     if Length(Trim(EdtCod.Text)) = 0 then
     begin
@@ -248,8 +249,37 @@ begin
   if (retorno <> '') then begin
     EdtCod.Text := retorno;
     EdtCod.SelectAll;
-    findCod(Frm_BuscaOperador.Retorno.Cod);
+    findCod(StrToInt(retorno));
   end;
+end;
+
+procedure TFrmCadOperador.btnGravarClick(Sender: TObject);
+var
+  I: Integer;
+begin
+  //Testar Campos
+
+  try
+    TestaCampos
+  Except
+    on E: Exception do begin
+      ShowMessage('Erro: ' + e.Message);
+      Exit;
+    end;
+  end;
+
+  if (QryOperador.State = dsInsert) then begin
+    QryOperadorCOD_VENDEDOR.AsInteger := StrToInt(getCampoSelect('SELECT GEN_ID(ID_VENDEDORES, 1) FROM RDB$DATABASE'));
+  end;
+
+  if (CmbStatus.ItemIndex = 0) then Self.QryOperadorSTATUS_VENDEDOR.AsString := 'A'
+  else if (CmbStatus.ItemIndex = 1) then Self.QryOperadorSTATUS_VENDEDOR.AsString := 'I'
+  else Self.QryOperadorSTATUS_VENDEDOR.Clear;
+
+  QryOperador.Post;
+  QryOperador.UpdateTransaction.Commit;
+
+  findCod(0);
 end;
 
 procedure TFrmCadOperador.btnBuscaCidClick(Sender: TObject);
@@ -257,8 +287,9 @@ var retorno: String;
 begin
   retorno := Unt_FrmPrincipal.Frm_principal.AbreTelaBuscaCidade;
   if (retorno <> '') then begin
-    EdtCodCid.Text := retorno;
-    EdtNomeCid.Text := getCampoSelect('SELECT C.NOME_CIDADE FROM CIDADES C WHERE C.COD_CIDADE = ' + EdtCodCid.Text);
+    QryOperadorCODCIDADE_VENDEDOR.AsString := retorno;
+    QryOperadorNOME_CIDADE.AsString :=
+      getCampoSelect('SELECT C.NOME_CIDADE FROM CIDADES C WHERE C.COD_CIDADE = ' + EdtCodCid.Text);
   end;
 end;
 
@@ -266,6 +297,29 @@ procedure TFrmCadOperador.ShowModal;
 begin
   iIndxTipo := 0;
   inherited ShowModal;
+end;
+
+procedure TFrmCadOperador.TestaCampos;
+begin
+  if (EdtCod.Text = '') then begin
+    EdtCod.SetFocus;
+    raise Exception.Create('Digite um valor válido para o campo Código do Vendedor.')
+  end else if (QryOperadorNOME_VENDEDOR.AsString.IsEmpty) then begin
+    EdtNome.SetFocus;
+    raise Exception.Create('Digite um valor válido para o campo Nome do Vendedor.')
+  end else if (QryOperadorCODCIDADE_VENDEDOR.AsString.IsEmpty) then begin
+    EdtCodCid.SetFocus;
+    raise Exception.Create('Digite um valor válido para o campo Código da Cidade.')
+  end else if (QryOperadorNOME_CIDADE.AsString.IsEmpty) then begin
+    EdtCodCid.Text;
+    raise Exception.Create('Digite um valor válido para o campo Nome da Cidade.')
+  end else if (QryOperadorSENHA_VENDEDOR.AsString.IsEmpty) then begin
+    EdtNomeCid.SetFocus;
+    raise Exception.Create('Digite um valor válido para o campo Senha.')
+  end else if (CmbStatus.ItemIndex = -1) then begin
+    CmbStatus.SetFocus;
+    raise Exception.Create('Escolha uma opção válida para o campo Status.');
+  end;
 end;
 
 procedure TFrmCadOperador.ShowModal(pCod: String);

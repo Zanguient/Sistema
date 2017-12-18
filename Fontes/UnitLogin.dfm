@@ -19,6 +19,7 @@ object FormLogin: TFormLogin
   Position = poScreenCenter
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object LbLogo1: TLabel
@@ -186,7 +187,6 @@ object FormLogin: TFormLogin
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 120
     object LbCod: TLabel
       AlignWithMargins = True
       Left = 3
@@ -236,7 +236,6 @@ object FormLogin: TFormLogin
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 156
     object LbSenha: TLabel
       AlignWithMargins = True
       Left = 3

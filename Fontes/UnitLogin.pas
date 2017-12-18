@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls;
+  Vcl.StdCtrls, Vcl.ExtCtrls, UntFuncoes;
 
 type
   TFormLogin = class(TForm)
@@ -34,11 +34,16 @@ type
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
     procedure Edit2KeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+
   private
-    { Private declarations }
     procedure Logar(codOperador: Integer);
+
   public
-    { Public declarations }
+    constructor Create(AOwner: TComponent); overload; override;
+    constructor Create(AOwner: TComponent; const ehLogin: boolean); reintroduce; overload;
+
+    var ehLogin: Boolean;
   end;
 
 var
@@ -72,6 +77,17 @@ begin
       EdtUser.SelectAll;
     end;
   end;
+end;
+
+constructor TFormLogin.Create(AOwner: TComponent);
+begin
+  inherited;
+end;
+
+constructor TFormLogin.Create(AOwner: TComponent; const ehLogin: boolean);
+begin
+  Create(AOwner);
+  Self.ehLogin := ehLogin;
 end;
 
 procedure TFormLogin.Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -142,8 +158,21 @@ begin
   Canvas.LineTo(BtnCancelar.Left, BtnCancelar.Top);
 end;
 
+procedure TFormLogin.FormShow(Sender: TObject);
+begin
+  if (ehLogin) then begin
+    LbLogo2.Caption := 'Login de Operador';
+  end else begin //troca operador
+    LbLogo2.Caption := 'Troca de Operador';
+  end;
+end;
+
 procedure TFormLogin.Logar(codOperador: Integer);
 begin
+  if not (ehLogin) then begin
+    MsgAviso('Operador trocado com sucesso!');
+  end;
+
   FormLogin.ModalResult := mrOk;
 end;
 

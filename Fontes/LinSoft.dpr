@@ -1,12 +1,7 @@
 ﻿program LinSoft;
 
 uses
-  Vcl.Forms,
-  GifImg,
-  Vcl.Dialogs,
-  Vcl.Controls,
-  Vcl.Themes,
-  Vcl.Styles,
+  Vcl.Forms, GifImg, Vcl.Dialogs, Vcl.Controls, Vcl.Themes, Vcl.Styles, SysUtils,
   Unt_FrmRelListaClientes in 'Unt_FrmRelListaClientes.pas' {Frm_RelListaClientes},
   Unt_FrmListaClientes in 'Unt_FrmListaClientes.pas' {FormListClientes},
   Unt_FrmCadCliente in 'Unt_FrmCadCliente.pas' {FormCadastroCliente},
@@ -43,16 +38,25 @@ begin
   try
     dm := Tdm.Create(Application);
 
-    if dm.DB.Connected = True then begin
-      FormLogin := TFormLogin.Create(nil);
+    if (dm.DB.Connected = True) then begin
+
+      FormLogin := TFormLogin.Create(Application, True);
       FormLogin.ShowModal;
 
-      if FormLogin.ModalResult = mrOK then begin
-        Frm_principal := TFrm_principal.Create(Application);
-        Frm_principal.ShowModal;
+      if (FormLogin.ModalResult = mrOK) then begin
+        FormLogin.Free;
+        FormLogin := nil;
+
+        Application.CreateForm(TFrm_principal, Frm_principal);
+        Application.Run;
       end;
+
     end;
-  finally
-    FormLogin.Free;
+
+  Except
+    on E: Exception do begin
+      MsgErro('Não foi Possível Abrir o Sistema. ' + #13 + 'Erro: ' + e.Message);
+    end;
   end;
+
 end.

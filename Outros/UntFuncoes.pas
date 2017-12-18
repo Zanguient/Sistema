@@ -4,7 +4,7 @@ interface
 
 uses Vcl.Forms, Grids, DBGrids, Winapi.Messages, Winapi.Windows, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Dialogs, Vcl.Controls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls, System.MaskUtils, Vcl.Mask,
-  Data.DB, Vcl.Buttons, Vcl.Menus;
+  Data.DB, Vcl.Buttons, Vcl.Menus, ComboBoxKey;
 
 type
   TTipoMsg = (tMsgErroPK, tMsgDelBtn, tMsgCloseFrm, tMsgCancBtn, tMsgCampoBranco, tMsgCampObrig);

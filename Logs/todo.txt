@@ -1,18 +1,10 @@
   TO-DO
+  - Melhorar procedimento de acertar o NroItem
+  - Corrigir Bug ítem duplicado Venda
 
-  Solicitação Urgente
-  - Criar Tela de vendas - PDV
-
-    - Qnd. o Pnl. Detalhes Prod. estiver Visible=False, o enter no OnExit do EdtCodProduto voltar a dar foco para o EdtCodProduto
-    - Só aparecer produto no DBGrid quando der enter no EdtSubTotal
-    - Atualizar Totais da Venda 
-    - 
-    - 
-    - 
-    - 
-
-
-  Solicitação Futura
+  - Acertar CodItem ao deletar Item
+  - Add Info coluna CST e AliqICMS
+  - Add Info FrmPgmt
   - Opção de copiar img para pasta do sistema config. gerais;
   - Mudar Edit busca Imagem no Cadastro Produto;
   - Criar botão de duplicar cadastro;

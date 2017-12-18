@@ -7,7 +7,7 @@ uses
   Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.Buttons, Vcl.Themes, Vcl.ExtCtrls, VCLTee.TeCanvas,
   System.ImageList, Vcl.ImgList, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage, Vcl.ToolWin, Vcl.ComCtrls, ACBrBase,
   ACBrValidador, Vcl.Imaging.GIFImg, ShellAPI, Clipbrd, System.Actions, Vcl.ActnList, IB_Services, Unt_FrmCadGrupo,
-  MidasLib, Unt_FrmCadOperador;
+  MidasLib, Unt_FrmCadOperador, UnitLogin;
 
 type
   TFrm_principal = class(TForm)
@@ -15,9 +15,7 @@ type
     pnTop:             TPanel;
     pnLeft:            TPanel;
     pnDownInfo:        TPanel;
-    pnSecond:          TPanel;
     pnFirst:           TPanel;
-    pnThird:           TPanel;
     TbLeft:            TToolBar;
     tbTop:             TToolBar;
     btnPdv:            TToolButton;
@@ -94,6 +92,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnSubGrupoClick(Sender: TObject);
     procedure btnPdvClick(Sender: TObject);
+    procedure rocarOperador1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -113,7 +112,7 @@ type
     procedure AbreTelaCliente(Cod: Integer);
     procedure AbreTelaProduto(Cod: Integer);
     procedure AbreTelaCidade(Cod: Integer);
-    procedure AbreTelaOperador(Cod: Integer);
+    function AbreTelaOperador(pEhLogin: Boolean): boolean;
     procedure PreencheOperador;
 
     function AbreTelaBuscaCidade: String;
@@ -131,7 +130,7 @@ var
 implementation
 
 uses Unt_FrmListaClientes, UnitListCidades, Unt_FrmCadCidade, Unt_FrmConfigGeral, UnitConstants,
-  Unt_DM, UnitTrocaOperador, UnitLogin, Unt_FrmCadProduto, UnitCadOper, UnitPDV, UnitFuncoes,
+  Unt_DM, UnitTrocaOperador, Unt_FrmCadProduto, UnitCadOper, UnitPDV, UnitFuncoes,
   Unt_FrmCadCliente, Unt_FrmBuscaCidade,Unt_FrmBuscaCliente, Unt_FrmBuscaProduto, Unt_FrmBuscaOperador,
   Unt_FrmBck, Unt_Dados, Unt_FrmStrings, Unt_PDV;
 
@@ -193,6 +192,23 @@ begin
   end;
 end;
 
+function TFrm_principal.AbreTelaOperador(pEhLogin: Boolean): boolean;
+begin
+  try
+    with UnitLogin.FormLogin do begin
+
+      if (FormLogin = nil) then FormLogin := TFormLogin.Create(nil, False);
+      FormLogin.ShowModal;
+
+      if (FormLogin.ModalResult = mrOK) then Result := True
+      else Result := False;
+
+    end;
+  finally
+    FreeAndNil(FormLogin);
+  end;
+end;
+
 procedure TFrm_principal.AbreTelaCidade(Cod: Integer);
 begin
   try
@@ -216,19 +232,6 @@ begin
     end;
   finally
     FreeAndNil(FormCadastroCliente);
-  end;
-end;
-
-procedure TFrm_principal.AbreTelaOperador(Cod: Integer);
-begin
-  try
-    with FrmCadOperador do begin
-      if (FrmCadOperador = nil) then Application.CreateForm(TFrmCadOperador, FrmCadOperador);
-      CodOper := Cod;
-      ShowModal();
-    end;
-  finally
-    FreeAndNil(FrmCadOperador);
   end;
 end;
 
@@ -313,6 +316,14 @@ procedure TFrm_principal.PreencheOperador;
 begin
   LbCodOper.caption := dm.getIdOperadorLogado;
   LbNomeOper.caption := dm.getNomeOperadorLogado;
+end;
+
+procedure TFrm_principal.rocarOperador1Click(Sender: TObject);
+begin
+  if (AbreTelaOperador(False)) then begin
+    LbNomeOper.Caption := dm.getNomeOperadorLogado;
+    LbCodOper.Caption := dm.getIdOperadorLogado;
+  end;
 end;
 
 procedure TFrm_principal.Cidades1Click(Sender: TObject);
@@ -407,7 +418,7 @@ end;
 
 procedure TFrm_principal.Operador1Click(Sender: TObject);
 begin
-  AbreTelaOperador(0);
+  AbreTelaOperador(False);
 end;
 
 procedure TFrm_principal.SbSairClick(Sender: TObject);

@@ -63,18 +63,6 @@ type
 
     dbgPDV: TDBGrid;
     DsPDV: TDataSource;
-    pnlOperador: TPanel;
-    lbNomeOperador: TLabel;
-    btnGetOperador: TSpeedButton;
-    btnCadOperador: TSpeedButton;
-    EdtCodOperador: TEdit;
-    EdtNomeOperador: TEdit;
-    pnlDetPessoa: TPanel;
-    lbNomeCliente: TLabel;
-    EdtCodCliente: TEdit;
-    edtNomeCliente: TEdit;
-    btnCadCliente: TSpeedButton;
-    btnGetCliente: TSpeedButton;
     pnlMyProd: TPanel;
     btnGetProduto: TSpeedButton;
     lbNomeProduto: TLabel;
@@ -94,30 +82,39 @@ type
     Panel1: TPanel;
     BitBtn2: TBitBtn;
     BitBtn1: TBitBtn;
-    QryProdPDV: TpFIBDataSet;
-    QryProdPDVCOD_PRODUTO: TFIBIntegerField;
-    QryProdPDVNOME_PRODUTO: TFIBStringField;
-    QryProdPDVPRVENDA_PRODUTO: TFIBBCDField;
-    QryProdPDVESTOQUE_PRODUTO: TFIBBCDField;
-    QryProdPDVUNIDADE_PRODUTO: TFIBSmallIntField;
-    QryProdPDVCST_PRODUTO: TFIBStringField;
-    QryProdPDVPERC_ICMS_ESTADO_PRODUTO: TFIBFloatField;
-    EdtSubtotal: TDBEdit;
-    EdtVlr: TDBEdit;
-    EdtDes: TDBEdit;
-    EdtQnt: TDBEdit;
-    QryProdPDVSUBTOTAL: TAggregateField;
-    QryProdPDVQNTD_ITEM: TFloatField;
-    CdsPDV: TpFIBClientDataSet;
+    pnlOperador: TPanel;
+    lbNomeOperador: TLabel;
+    btnGetOperador: TSpeedButton;
+    btnCadOperador: TSpeedButton;
+    EdtCodOperador: TEdit;
+    EdtNomeOperador: TEdit;
+    pnlDetPessoa: TPanel;
+    lbNomeCliente: TLabel;
+    btnCadCliente: TSpeedButton;
+    btnGetCliente: TSpeedButton;
+    EdtCodCliente: TEdit;
+    edtNomeCliente: TEdit;
+    DBGrid1: TDBGrid;
+    EdtQnt: TEdit;
+    EdtSubtotal: TEdit;
+    EdtVlr: TEdit;
+    EdtDesc: TEdit;
+    MnItems: TPopupMenu;
+    Deletar1: TMenuItem;
+    Label1: TLabel;
+    Label2: TLabel;
+    CdsPDV: TClientDataSet;
     CdsPDVCOD_PRODUTO: TIntegerField;
     CdsPDVNOME_PRODUTO: TStringField;
     CdsPDVPRVENDA_PRODUTO: TCurrencyField;
-    CdsPDVESTQ_PRODUTO: TFloatField;
-    CdsPDVUND_PRODUTO: TIntegerField;
-    CdsPDVPERC_ICMS_ESTADO: TFloatField;
-    CdsPDVQNT_PRODUTO: TFloatField;
-    CdsPDVSUBTOTAL_PRODUTO: TCurrencyField;
-    CdsPDVCST: TStringField;
+    CdsPDVESTOQUE_PRODUTO: TFloatField;
+    CdsPDVUND_PRODUTO: TStringField;
+    CdsPDVCST_PRODUTO: TIntegerField;
+    CdsPDVALIQ_ICMS: TFloatField;
+    CdsPDVQNTD_VENDA: TFloatField;
+    CdsPDVSUBTOTAL: TCurrencyField;
+    CdsPDVTOTAL: TAggregateField;
+    CdsPDVNRO_ITEM: TIntegerField;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -140,6 +137,9 @@ type
     procedure EdtCodProdutoExit(Sender: TObject);
     procedure CdsPDVCalcFields(DataSet: TDataSet);
     procedure EdtSubtotalExit(Sender: TObject);
+    procedure EdtQntExit(Sender: TObject);
+    procedure EdtVlrExit(Sender: TObject);
+    procedure Deletar1Click(Sender: TObject);
 
   strict private
     procedure BuscaOperadorPDV(cod: Integer);
@@ -155,9 +155,14 @@ type
     procedure ConfigIni;
     procedure AttVenda;
     procedure LimparCamposItens;
+    procedure BuscarProduto(PreencheDBG: Boolean);
+    procedure AtualizaNroItem();
 
     function HeProdutoReptdo: Boolean;
     function AutoIncItem: Integer;
+
+  public
+    function PreencheOperadorPDV(): boolean;
 
   end;
 
@@ -205,9 +210,113 @@ begin
   end;
 end;
 
+procedure TFrm_PDV.BuscarProduto(PreencheDBG: Boolean);
+begin
+  if (Length(Trim(EdtCodProduto.Text)) > 0) then begin
+    with getNewQuery() do begin
+      try
+        try
+          if (EdtCodProduto.Text = '') or (edtNomeProduto.Text = '') then begin //Busca Produto
+            Close;
+            SQL.Clear;
+
+            if (StrToIntDef(EdtCodProduto.Text, 0) = 0) then begin //pesquisa por Nome
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P');
+              SQL.Add('WHERE UPPER(P.NOME_PRODUTO COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
+              ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodProduto.Text) + '%';
+
+            end else if (Length(EdtCodProduto.Text) = 14) then begin //Pesquisar por Cod de Barras
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.CODBARRA_PRODUTO = :COD');
+              ParamByName('COD').AsString := EdtCodProduto.Text;
+
+            end else begin //Pesquisa por Cod
+              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.COD_PRODUTO = :COD');
+              ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
+            end;
+
+            ExecQuery;
+
+            if (RecordCount = 1) then begin
+              EdtCodProduto.Text  := FieldByName('COD_PRODUTO').AsString;
+              edtNomeProduto.Text := FieldByName('NOME_PRODUTO').AsString;
+              PreencheImgBtn;
+            end else
+              AbreTelaBuscaProduto(EdtCodProduto.Text);
+          end;
+
+          if not (EdtCodProduto.Text = '') and not (edtNomeProduto.Text = '') then begin //Busca Detalhes Produto
+            Close;
+            SQL.Clear;
+
+            SQL.Add('SELECT');
+            SQL.Add('P.COD_PRODUTO,');
+            SQL.Add('P.NOME_PRODUTO,');
+            SQL.Add('P.PRVENDA_PRODUTO,');
+            SQL.Add('P.ESTOQUE_PRODUTO,');
+            SQL.Add('P.UNIDADE_PRODUTO,');
+            SQL.Add('P.CST,');
+            SQL.Add('P.PERC_ICMS_ESTADO_PRODUTO');
+            SQL.Add('FROM PRODUTOS P');
+            SQL.Add('WHERE P.COD_PRODUTO = :COD');
+            ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
+
+            ExecQuery;
+
+            EdtVlr.Text := IfThen(Length(EdtVlr.Text) > 0, EdtVlr.Text, FieldByName('PRVENDA_PRODUTO').AsString);
+            EdtQnt.Text := IfThen(Length(EdtQnt.Text) > 0, EdtQnt.Text, '1');
+            EdtSubtotal.Text := CurrToStr(StrToCurr(EdtVlr.Text) * StrToCurr(EdtQnt.Text));
+            EdtDesc.Text := '';
+
+            if (PreencheDBG = True) then begin
+              CdsPDV.Open;
+
+              if (CdsPDV.Locate(CdsPDVCOD_PRODUTO.FieldName, FieldByName('COD_PRODUTO').AsInteger,[]) and
+              (CdsPDVPRVENDA_PRODUTO.AsCurrency = StrToCurr(EdtVlr.Text))) then begin
+                DsPDV.Edit;
+                CdsPDVQNTD_VENDA.AsFloat := StrToFloatDef(EdtQnt.Text,1) + CdsPDVQNTD_VENDA.AsFloat;
+              end else begin
+                CdsPDV.Append;
+                CdsPDVQNTD_VENDA.AsFloat := StrToFloatDef(EdtQnt.Text,1);
+                AtualizaNroItem;
+              end;
+
+              CdsPDVCOD_PRODUTO.AsInteger := FieldByName('COD_PRODUTO').AsInteger;
+              CdsPDVNOME_PRODUTO.AsString := FieldByName('NOME_PRODUTO').AsString;
+              CdsPDVPRVENDA_PRODUTO.AsCurrency := StrToCurr(EdtVlr.Text);
+              CdsPDVESTOQUE_PRODUTO.AsFloat := FieldByName('ESTOQUE_PRODUTO').AsFloat;
+              CdsPDVUND_PRODUTO.AsString := 'UND';
+
+              CdsPDVALIQ_ICMS.AsFloat := FieldByName('PERC_ICMS_ESTADO_PRODUTO').AsFloat;
+              CdsPDVALIQ_ICMS.DisplayFormat := '#.##%';
+
+              CdsPDVCST_PRODUTO.AsString := FieldByName('CST').AsString;
+              CdsPDVSUBTOTAL.AsCurrency := CdsPDVQNTD_VENDA.AsFloat * CdsPDVPRVENDA_PRODUTO.AsCurrency;
+
+              if DsPDV.State = dsInsert then CdsPDV.Post;
+              LimparCamposItens;
+            end;
+
+          end;
+
+        except
+          on E: Exception do begin
+            Transaction.Rollback;
+            Close;
+            MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
+          end;
+        end;
+      finally
+        LiberarQuery(Name);
+      end;
+    end;
+  end;
+end;
+
 procedure TFrm_PDV.CdsPDVCalcFields(DataSet: TDataSet);
 begin
- CdsPDVSUBTOTAL_PRODUTO.AsCurrency := CdsPDVPRVENDA_PRODUTO.AsCurrency * CdsPDVQNT_PRODUTO.AsFloat;
+   CdsPDVSUBTOTAL.AsCurrency := CdsPDVPRVENDA_PRODUTO.AsCurrency * CdsPDVQNTD_VENDA.AsFloat;
+   LbSubTotal.Caption := CdsPDVTOTAL.AsString;
+   LbTotal.Caption := CdsPDVTOTAL.AsString;
 end;
 
 procedure TFrm_PDV.AbreTelaBuscaOperador(pTxtBusca: String);
@@ -265,9 +374,7 @@ begin
   with (Frm_BuscaProduto) do begin
     try
       Application.CreateForm(TFrm_BuscaProduto, Frm_BuscaProduto);
-
       ParamBusca := pTxtBusca;
-
       ShowModal;
 
       if (ModalResult = mrOk) then begin
@@ -331,6 +438,23 @@ begin
 //    (CdsPDVSUBTOTAL_VENDA.AsString);
 //  LbTotal.Caption := FormatarBanco(CdsPDVTOTAL_VENDA.AsString);
 //  lbQntItens.Caption := IntToStr(CdsPDV.RecordCount);
+end;
+
+procedure TFrm_PDV.AtualizaNroItem;
+var
+  I: Integer;
+begin
+  i := 1;
+  CdsPDV.First;
+
+  while not CdsPDV.Eof do begin
+    CdsPDV.Edit;
+    CdsPDV.FieldByName('NRO_ITEM').AsInteger := I;
+    Inc(I);
+    CdsPDV.Next;
+  end;
+
+  CdsPDV.Edit;
 end;
 
 function TFrm_PDV.AutoIncItem: Integer;
@@ -428,6 +552,12 @@ begin
   AttVenda;
 end;
 
+procedure TFrm_PDV.Deletar1Click(Sender: TObject);
+begin
+  CdsPDV.Delete;
+  AtualizaNroItem();
+end;
+
 procedure TFrm_PDV.EdtCodClienteExit(Sender: TObject);
 begin
   if (Length(Trim(EdtCodCliente.Text)) > 0) then begin
@@ -465,17 +595,20 @@ end;
 
 procedure TFrm_PDV.EdtCodClienteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (Key = VK_F3) then btnGetCliente.Click
+   if (Key = VK_F3) then btnGetCliente.Click
   else if (Key = VK_ADD) then btnCadCliente.Click;
 end;
 
 procedure TFrm_PDV.EdtCodOperadorExit(Sender: TObject);
 begin
-  if (Length(Trim(EdtCodOperador.Text)) > 0) then begin
+  if (Length(EdtCodOperador.Text) > 0) then begin
+
+    if (EdtCodOperador.Text = '0') and (Length(Trim(EdtNomeOperador.Text)) > 0) then Exit;
+
     with getNewQuery() do begin
       try
         try
-          if (StrToIntDef(EdtCodOperador.Text, 0) = 0) then begin //pesquisa por Nome
+          if (StrToIntDef(EdtCodOperador.Text, -1) = -1) then begin //pesquisa por Nome
             SQL.Add('SELECT V.COD_VENDEDOR, V.NOME_VENDEDOR FROM VENDEDORES V');
             SQL.Add('WHERE UPPER(V.NOME_VENDEDOR COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
             ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodOperador.Text) + '%';
@@ -490,8 +623,9 @@ begin
             EdtCodOperador.Text  := FieldByName('COD_VENDEDOR').AsString;
             EdtNomeOperador.Text := FieldByName('NOME_VENDEDOR').AsString;
             PreencheImgBtn;
-          end else
+          end else begin
             AbreTelaBuscaOperador(EdtCodOperador.Text);
+          end;
         except
           on E: Exception do begin
             MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
@@ -517,90 +651,8 @@ end;
 
 procedure TFrm_PDV.EdtCodProdutoExit(Sender: TObject);
 begin
-  if (Length(Trim(EdtCodProduto.Text)) > 0) then begin
-    with getNewQuery() do begin
-      try
-        try
-          if (EdtCodProduto.Text = '') or (edtNomeProduto.Text = '') then begin //Busca Produto
-            Close;
-            SQL.Clear;
-
-            if (StrToIntDef(EdtCodProduto.Text, 0) = 0) then begin //pesquisa por Nome
-              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P');
-              SQL.Add('WHERE UPPER(P.NOME_PRODUTO COLLATE WIN_PTBR) LIKE UPPER(:NOME)');
-              ParamByName('NOME').AsString := '%' + RemoveAcentos(EdtCodProduto.Text) + '%';
-
-            end else if (Length(EdtCodProduto.Text) = 14) then begin //Pesquisar por Cod de Barras
-              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.CODBARRA_PRODUTO = :COD');
-              ParamByName('COD').AsString := EdtCodProduto.Text;
-
-            end else begin //Pesquisa por Cod
-              SQL.Add('SELECT P.COD_PRODUTO, P.NOME_PRODUTO FROM PRODUTOS P WHERE P.COD_PRODUTO = :COD');
-              ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
-            end;
-
-            ExecQuery;
-
-            if (RecordCount = 1) then begin
-              EdtCodProduto.Text  := FieldByName('COD_PRODUTO').AsString;
-              edtNomeProduto.Text := FieldByName('NOME_PRODUTO').AsString;
-              PreencheImgBtn;
-            end else
-              AbreTelaBuscaProduto(EdtCodProduto.Text);
-          end;
-
-          if not (EdtCodProduto.Text = '') and not (edtNomeProduto.Text = '') then begin //Busca Detalhes Produto
-            Close;
-            SQL.Clear;
-
-            SQL.Add('SELECT');
-            SQL.Add('P.COD_PRODUTO,');
-            SQL.Add('P.NOME_PRODUTO,');
-            SQL.Add('P.PRVENDA_PRODUTO,');
-            SQL.Add('P.ESTOQUE_PRODUTO,');
-            SQL.Add('P.UNIDADE_PRODUTO,');
-            SQL.Add('P.CST,');
-            SQL.Add('P.PERC_ICMS_ESTADO_PRODUTO');
-            SQL.Add('FROM PRODUTOS P');
-            SQL.Add('WHERE P.COD_PRODUTO = :COD');
-            ParamByName('COD').AsInteger := StrToIntDef(EdtCodProduto.Text, 0);
-
-            ExecQuery;
-
-            CdsPDV.Open;
-
-            if (CdsPDV.Locate(CdsPDVCOD_PRODUTO.FieldName, FieldByName('COD_PRODUTO').AsInteger,[])) then begin
-              dsPDV.Edit;
-              CdsPDVQNT_PRODUTO.AsFloat := StrToFloatDef(EdtQnt.Text,1) + CdsPDVQNT_PRODUTO.AsFloat;
-            end else CdsPDV.Append;
-
-            CdsPDVCOD_PRODUTO.AsInteger := FieldByName('COD_PRODUTO').AsInteger;
-            CdsPDVNOME_PRODUTO.AsString := FieldByName('NOME_PRODUTO').AsString;
-            CdsPDVPRVENDA_PRODUTO.AsCurrency := FieldByName('PRVENDA_PRODUTO').AsCurrency;
-            CdsPDVESTQ_PRODUTO.AsFloat := FieldByName('ESTOQUE_PRODUTO').AsFloat;
-            CdsPDVUND_PRODUTO.AsInteger := FieldByName('UNIDADE_PRODUTO').AsInteger;
-            CdsPDVCST.AsString := FieldByName('CST').AsString;
-            CdsPDVPERC_ICMS_ESTADO.AsFloat := FieldByName('PERC_ICMS_ESTADO_PRODUTO').AsFloat;
-            CdsPDVQNT_PRODUTO.AsFloat := StrToFloatDef(EdtQnt.Text,1);
-            CdsPDVSUBTOTAL_PRODUTO.AsCurrency := CdsPDVQNT_PRODUTO.AsFloat * CdsPDVPRVENDA_PRODUTO.AsCurrency;
-
-            CdsPDV.Post;
-          end;
-
-          if not (PnlDetalheProduto.Visible) then LimparCamposItens;
-
-        except
-          on E: Exception do begin
-            Transaction.Rollback;
-            Close;
-            MsgErro('Erro ao efetuar busca ' + #13 + e.Message);
-          end;
-        end;
-      finally
-        LiberarQuery(Name);
-      end;
-    end;
-  end;
+  if (PnlDetalheProduto.Visible = True) then BuscarProduto(False)
+  else BuscarProduto(True);
 end;
 
 procedure TFrm_PDV.EdtCodProdutoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -609,9 +661,19 @@ begin
   else if (Key = VK_ADD) then BtnCadProd.Click;
 end;
 
+procedure TFrm_PDV.EdtQntExit(Sender: TObject);
+begin
+  BuscarProduto(False);
+end;
+
 procedure TFrm_PDV.EdtSubtotalExit(Sender: TObject);
 begin
-  LimparCamposItens;
+  BuscarProduto(True);
+end;
+
+procedure TFrm_PDV.EdtVlrExit(Sender: TObject);
+begin
+  BuscarProduto(False);
 end;
 
 procedure TFrm_PDV.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -621,6 +683,9 @@ end;
 
 procedure TFrm_PDV.FormCreate(Sender: TObject);
 begin
+
+  if not (PreencheOperadorPDV()) then Exit;
+
   PreencheImgBtn;
 
   pnlFrmPgmt.Width := Screen.Width DIV 3;
@@ -666,7 +731,7 @@ begin
   EdtQnt.Clear;
   EdtVlr.Clear;
   EdtSubtotal.Clear;
-  EdtDes.Clear;
+  EdtDesc.Clear;
 
   EdtCodProduto.SelectAll;
   EdtCodProduto.SetFocus;
@@ -727,6 +792,12 @@ begin
       GetBitmap(4, btnCadFrmPgmt.Glyph);
     end;
   end;
+end;
+
+function TFrm_PDV.PreencheOperadorPDV: boolean;
+begin
+  EdtCodOperador.Text := dm.getIdOperadorLogado;
+  EdtNomeOperador.Text := dm.getNomeOperadorLogado;
 end;
 
 procedure TFrm_PDV.RefazAutoInc;

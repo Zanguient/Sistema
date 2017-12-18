@@ -1,15 +1,15 @@
-unit Unt_DM;
+ unit Unt_DM;
 
 interface
 
 uses
   System.SysUtils, System.Classes, Data.DB, Data.Win.ADODB, Data.FMTBcd,
-  Data.DBXFirebird, Data.SqlExpr, Datasnap.Provider, Datasnap.DBClient,
-  Data.DBXOdbc, FIBDatabase, pFIBDatabase, FIBDataSet, pFIBDataSet, Vcl.Dialogs,
-  Vcl.Forms, IniFiles, Winsock, FIBQuery, pFIBQuery, System.Types, Winapi.Windows,
-  Vcl.Themes, Vcl.Controls, System.Generics.Collections, UntFuncoes;
+  Data.DBXFirebird, Data.SqlExpr, Datasnap.Provider, Datasnap.DBClient, JvComponentBase,
+  Data.DBXOdbc, FIBDatabase, pFIBDatabase, FIBDataSet, pFIBDataSet, Vcl.Dialogs, JvFormPlacement,
+  Vcl.Forms, IniFiles, Winsock, FIBQuery, pFIBQuery, System.Types, Winapi.Windows, ComboBoxKey,
+  Vcl.Themes, Vcl.Controls, System.Generics.Collections, UntFuncoes, JvAppStorage, JvAppXMLStorage;
 
-type
+  type
   Tdm = class(TDataModule)
     DB: TpFIBDatabase;
     Trans: TpFIBTransaction;
@@ -23,16 +23,16 @@ type
     procedure TipoCadSetText(Sender: TField; const Text: string);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
-
   private
+    procedure JvAppXMLFileStorage1DecodeValue(Sender: TObject; var Value: string);
 
   public
-    { Public declarations }
     procedure ConectarDB;
     procedure DesconectarDB;
     procedure PreencheDadosEmpresa;
     procedure SetOperadorLogado(cod, nome: String);
     procedure setTemaPrincipal(tema: String);
+
     function CriaArqINI: Boolean;
     function VerificaOperador(pCod: String; pSenha: String): Integer;
     function GetIP: String;
@@ -43,6 +43,8 @@ type
     function getNomeOperadorLogado: String;
     function getIdOperadorLogado: String;
     function getNomeTemaPeloIndx(Indx: Integer): String;
+
+
   end;
 
   function getNewTrans: TpFIBTransaction;
@@ -172,10 +174,10 @@ begin
       ParamByName('COD').AsInteger := StrToInt(pCod);
       Open;
 
-      if (FieldByName('SENHA_VENDEDOR').AsString.Equals(UpperCase(pSenha))) then begin
+      if (UpperCase(FieldByName('SENHA_VENDEDOR').AsString).Equals(UpperCase(pSenha))) then begin
         if (FieldByName('STATUS_VENDEDOR').AsString.Equals('A')) then begin
           Result := 0;
-          SetOperadorLogado(pCod, FieldByName('NOME_OPERADOR').AsString);
+          SetOperadorLogado(pCod, FieldByName('NOME_VENDEDOR').AsString);
         end else Result := 2
       end;
       Exit;
@@ -189,15 +191,15 @@ procedure Tdm.ConectarDB;
 var Arq: TIniFile;
 aux: String;
 begin
-  db.ConnectParams.UserName := 'SUPS';//SYSDBA
-  db.ConnectParams.Password := 'maps3880';//masterkey
-  db.ConnectParams.CharSet := 'WIN1252';
-  db.LibraryName := 'fbclient.dll';
-
-  if getCampoINI('ConectarPorIP') = 'True' then
-    db.DBName := getCampoINI('ServerIP') + '/3051:' + getCampoINI('DB')
-  else
-    db.DBName := getCampoINI('ServerName') + '/3051:' + getCampoINI('DB');
+//  db.ConnectParams.UserName := 'SUPS';//SYSDBA
+//  db.ConnectParams.Password := 'maps3880';//masterkey
+//  db.ConnectParams.CharSet := 'WIN1252';
+//  db.LibraryName := 'fbclient.dll';
+//
+//  if getCampoINI('ConectarPorIP') = 'True' then
+//    db.DBName := getCampoINI('ServerIP') + '/3051:' + getCampoINI('DB')
+//  else
+//    db.DBName := getCampoINI('ServerName') + '/3051:' + getCampoINI('DB');
 
   try
     db.Connected := True;
@@ -212,24 +214,28 @@ end;
 
 //------------------------------------------
 function Tdm.CriaArqINI: Boolean;
+var IniFile: TIniFile;
 begin
   pathIni := pathConfig + '\LinSoft.ini';
 
-  if not fileexists(pathIni) then begin
-    with TIniFile.Create(pathIni) do begin
-      try
-        WriteString('CONEXAO', 'ServerIP', GetIP);
-        WriteString('CONEXAO', 'ServerName', GetServerName);
-        WriteString('CONEXAO', 'DB', pathDB + '\DATABASE.FDB');
-        WriteString('CONEXAO', 'ConectarPorIP', 'True');
-        Result := True;
-      except
-        on E: Exception do begin
-          Result := False;
-        end;
+  IniFile := TIniFile.Create(pathIni);
+
+  try
+    try
+      IniFile.WriteString('CONEXAO', 'ServerIP', GetIP);
+      IniFile.WriteString('CONEXAO', 'ServerName', GetServerName);
+      IniFile.WriteString('CONEXAO', 'DB', pathDB + '\DATABASE.FDB');
+      IniFile.WriteString('CONEXAO', 'ConectarPorIP', 'True');
+      Result := True;
+    except
+      on E: Exception do begin
+        Result := False;
       end;
     end;
-  end
+  finally
+    FreeAndNil(IniFile);
+  end;
+
 end;
 
 procedure Tdm.DataModuleCreate(Sender: TObject);
@@ -243,23 +249,22 @@ begin
   pathDB := pathSistema + '\DB';
   pathFolderBck := pathDB + '\Backups';
 
-  if CreateDir(pathSistema) then begin
-    CreateDir(pathBin);
-    CreateDir(pathConfig);
-    CreateDir(pathFotos);
-    CreateDir(pathDB);
-    CreateDir(pathFolderBck);
-  end;
+  CreateDir(pathBin);
+  CreateDir(pathConfig);
+  CreateDir(pathFotos);
+  CreateDir(pathDB);
+  CreateDir(pathFolderBck);
 
   ListaTrans := TObjectList<TpFIBTransaction>.Create;
   TotalTrans := 0;
   ListaQuery := TObjectList<TpFIBQuery>.Create;
   TotalQuery := 0;
 
-  if not (CriaArqINI) then Exit;
+  //if not (CriaArqINI) then Exit;
   ConectarDB;
   PreencheDadosEmpresa;
   setTemaPrincipal(getNomeTemaPeloIndx(tipoTemaEmpresa));
+
 end;
 
 procedure Tdm.DataModuleDestroy(Sender: TObject);
@@ -395,6 +400,11 @@ begin
   Winapi.Windows.GetUserName(PChar(user), I);
   user := string(PChar(user));
   result := user;
+end;
+
+procedure Tdm.JvAppXMLFileStorage1DecodeValue(Sender: TObject; var Value: string);
+begin
+
 end;
 
 procedure Tdm.PreencheDadosEmpresa;

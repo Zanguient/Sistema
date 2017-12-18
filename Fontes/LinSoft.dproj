@@ -173,11 +173,9 @@
         </DCCReference>
         <DCCReference Include="Unt_FrmBuscaGenerica.pas">
             <Form>Frm_BuscaGen</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Unt_FrmBuscaOperador.pas">
             <Form>Frm_BuscaOperador</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <None Include="LinSoft.todo"/>
         <BuildConfiguration Include="Debug">

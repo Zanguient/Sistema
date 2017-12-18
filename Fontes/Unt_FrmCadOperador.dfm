@@ -4,8 +4,8 @@ object FrmCadOperador: TFrmCadOperador
   BorderStyle = bsDialog
   BorderWidth = 5
   Caption = 'Cadastro de Operador'
-  ClientHeight = 254
-  ClientWidth = 356
+  ClientHeight = 261
+  ClientWidth = 367
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,6 +16,7 @@ object FrmCadOperador: TFrmCadOperador
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -23,7 +24,7 @@ object FrmCadOperador: TFrmCadOperador
   object LbOperacao: TLabel
     Left = 0
     Top = 0
-    Width = 356
+    Width = 367
     Height = 33
     Margins.Top = 10
     Align = alTop
@@ -35,97 +36,16 @@ object FrmCadOperador: TFrmCadOperador
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    ExplicitLeft = 3
-    ExplicitTop = 10
     ExplicitWidth = 262
-  end
-  object PnDown: TPanel
-    AlignWithMargins = True
-    Left = 6
-    Top = 223
-    Width = 347
-    Height = 28
-    Margins.Left = 6
-    Margins.Top = 0
-    Align = alBottom
-    BevelOuter = bvNone
-    Constraints.MaxHeight = 56
-    Constraints.MinHeight = 25
-    TabOrder = 0
-    ExplicitTop = 221
-    object BtnCancelar: TButton
-      AlignWithMargins = True
-      Left = 65
-      Top = 0
-      Width = 90
-      Height = 25
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alRight
-      Caption = 'Cancelar'
-      Constraints.MaxHeight = 25
-      Constraints.MaxWidth = 90
-      Constraints.MinHeight = 25
-      Constraints.MinWidth = 90
-      TabOrder = 2
-      OnClick = BtnCancelarClick
-      ExplicitLeft = 84
-      ExplicitTop = -8
-    end
-    object BtnDeletar: TButton
-      AlignWithMargins = True
-      Left = 158
-      Top = 0
-      Width = 90
-      Height = 25
-      Margins.Top = 0
-      Margins.Bottom = 0
-      Align = alRight
-      Caption = 'Deletar'
-      Constraints.MaxHeight = 25
-      Constraints.MaxWidth = 90
-      Constraints.MinHeight = 25
-      Constraints.MinWidth = 90
-      ImageAlignment = iaCenter
-      TabOrder = 1
-      OnClick = BtnDeletarClick
-      ExplicitLeft = 225
-    end
-    object BtnSalvar: TButton
-      AlignWithMargins = True
-      Left = 254
-      Top = 0
-      Width = 90
-      Height = 25
-      Margins.Top = 0
-      Margins.Bottom = 0
-      Align = alRight
-      BiDiMode = bdLeftToRight
-      Caption = 'Gravar (Ins)'
-      Constraints.MaxHeight = 25
-      Constraints.MaxWidth = 90
-      Constraints.MinHeight = 25
-      Constraints.MinWidth = 90
-      ParentBiDiMode = False
-      TabOrder = 0
-      OnClick = BtnSalvarClick
-      ExplicitLeft = 257
-      ExplicitTop = -8
-    end
   end
   object GroupBox2: TGroupBox
     AlignWithMargins = True
     Left = 3
     Top = 36
-    Width = 350
-    Height = 184
+    Width = 361
+    Height = 189
     Align = alClient
-    TabOrder = 1
-    ExplicitLeft = 0
-    ExplicitTop = 272
-    ExplicitWidth = 384
-    ExplicitHeight = 245
+    TabOrder = 0
     object Label7: TLabel
       Left = 21
       Top = 47
@@ -198,33 +118,16 @@ object FrmCadOperador: TFrmCadOperador
     end
     object Label1: TLabel
       Left = 17
-      Top = 154
+      Top = 157
       Width = 35
       Height = 13
       Caption = 'Status:'
     end
-    object EdtNome: TEdit
-      Left = 55
-      Top = 44
-      Width = 282
-      Height = 21
-      TabOrder = 0
-    end
-    object EdtCod: TEdit
-      Left = 55
-      Top = 17
-      Width = 89
-      Height = 21
-      TabOrder = 1
-      OnExit = EdtCodExit
-      OnKeyDown = EdtCodKeyDown
-      OnKeyPress = EdtCodKeyPress
-    end
     object GroupBox1: TGroupBox
-      Left = 16
-      Top = 98
-      Width = 321
-      Height = 45
+      Left = 21
+      Top = 99
+      Width = 322
+      Height = 46
       Caption = 'Cidade'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -232,10 +135,10 @@ object FrmCadOperador: TFrmCadOperador
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 3
       object btnBuscaCid: TSpeedButton
-        Left = 295
-        Top = 15
+        Left = 299
+        Top = 22
         Width = 19
         Height = 21
         Flat = True
@@ -282,51 +185,148 @@ object FrmCadOperador: TFrmCadOperador
           FFFFFFFFFFFFFFFFFFFF}
         OnClick = btnBuscaCidClick
       end
-      object EdtNomeCid: TEdit
+      object EdtNomeCid: TDBEdit
         Left = 50
         Top = 15
         Width = 243
         Height = 21
-        BevelOuter = bvNone
-        Color = clInactiveBorder
-        Enabled = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        MaxLength = 25
-        ParentFont = False
-        TabOrder = 1
+        TabStop = False
+        Color = clInactiveCaptionText
+        DataField = 'NOME_CIDADE'
+        DataSource = DsOperador
+        ReadOnly = True
+        TabOrder = 0
       end
-      object EdtCodCid: TEdit
+      object EdtCodCid: TDBEdit
         Left = 8
         Top = 15
         Width = 41
         Height = 21
-        Align = alCustom
-        BevelOuter = bvNone
-        MaxLength = 25
-        TabOrder = 0
+        DataField = 'CODCIDADE_VENDEDOR'
+        DataSource = DsOperador
+        TabOrder = 1
         OnExit = EdtCodCidExit
         OnKeyDown = EdtCodCidKeyDown
       end
     end
-    object EdtSenha: TEdit
+    object EdtSenha: TDBEdit
       Left = 55
       Top = 72
       Width = 134
       Height = 21
+      DataField = 'SENHA_VENDEDOR'
+      DataSource = DsOperador
       PasswordChar = '*'
-      TabOrder = 3
+      TabOrder = 2
     end
-    object cmbStatus: TComboBoxKey
-      Left = 58
-      Top = 149
-      Width = 119
+    object EdtNome: TDBEdit
+      Left = 55
+      Top = 44
+      Width = 288
+      Height = 21
+      DataField = 'NOME_VENDEDOR'
+      DataSource = DsOperador
+      TabOrder = 1
+      OnExit = EdtNomeExit
+    end
+    object EdtCod: TEdit
+      Left = 55
+      Top = 17
+      Width = 89
+      Height = 21
+      TabOrder = 0
+      OnExit = EdtCodExit
+      OnKeyDown = EdtCodKeyDown
+      OnKeyPress = EdtCodKeyPress
+    end
+    object CmbStatus: TComboBox
+      Left = 55
+      Top = 154
+      Width = 134
       Height = 21
       TabOrder = 4
-      Text = 'cmbStatus'
+      Text = 'Ativo'
+      Items.Strings = (
+        'Ativo'
+        'Inativo')
+    end
+  end
+  object pnButtons: TPanel
+    Left = 0
+    Top = 228
+    Width = 367
+    Height = 33
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+    object btnGravar: TBitBtn
+      AlignWithMargins = True
+      Left = 52
+      Top = 3
+      Width = 100
+      Height = 27
+      Align = alRight
+      Caption = 'Gravar <Ins>'
+      Glyph.Data = {
+        DE010000424DDE01000000000000760000002800000024000000120000000100
+        0400000000006801000000000000000000001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        3333333333333333333333330000333333333333333333333333F33333333333
+        00003333344333333333333333388F3333333333000033334224333333333333
+        338338F3333333330000333422224333333333333833338F3333333300003342
+        222224333333333383333338F3333333000034222A22224333333338F338F333
+        8F33333300003222A3A2224333333338F3838F338F33333300003A2A333A2224
+        33333338F83338F338F33333000033A33333A222433333338333338F338F3333
+        0000333333333A222433333333333338F338F33300003333333333A222433333
+        333333338F338F33000033333333333A222433333333333338F338F300003333
+        33333333A222433333333333338F338F00003333333333333A22433333333333
+        3338F38F000033333333333333A223333333333333338F830000333333333333
+        333A333333333333333338330000333333333333333333333333333333333333
+        0000}
+      NumGlyphs = 2
+      TabOrder = 0
+      OnClick = btnGravarClick
+    end
+    object BitBtn1: TBitBtn
+      AlignWithMargins = True
+      Left = 158
+      Top = 3
+      Width = 100
+      Height = 27
+      Align = alRight
+      Caption = 'Deletar'
+      Glyph.Data = {
+        DE010000424DDE01000000000000760000002800000024000000120000000100
+        0400000000006801000000000000000000001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        333333333333333333333333000033338833333333333333333F333333333333
+        0000333911833333983333333388F333333F3333000033391118333911833333
+        38F38F333F88F33300003339111183911118333338F338F3F8338F3300003333
+        911118111118333338F3338F833338F3000033333911111111833333338F3338
+        3333F8330000333333911111183333333338F333333F83330000333333311111
+        8333333333338F3333383333000033333339111183333333333338F333833333
+        00003333339111118333333333333833338F3333000033333911181118333333
+        33338333338F333300003333911183911183333333383338F338F33300003333
+        9118333911183333338F33838F338F33000033333913333391113333338FF833
+        38F338F300003333333333333919333333388333338FFF830000333333333333
+        3333333333333333333888330000333333333333333333333333333333333333
+        0000}
+      ModalResult = 2
+      TabOrder = 1
+    end
+    object BitBtn2: TBitBtn
+      AlignWithMargins = True
+      Left = 264
+      Top = 3
+      Width = 100
+      Height = 27
+      Align = alRight
+      Caption = 'Sair <Esc>'
+      Kind = bkClose
+      NumGlyphs = 2
+      TabOrder = 2
     end
   end
   object QryOperador: TpFIBDataSet
@@ -334,6 +334,10 @@ object FrmCadOperador: TFrmCadOperador
       'UPDATE VENDEDORES'
       'SET '
       '    NOME_VENDEDOR = :NOME_VENDEDOR,'
+      '    SENHA_VENDEDOR = :SENHA_VENDEDOR,'
+      '    SEXO_VENDEDOR = :SEXO_VENDEDOR,'
+      '    CPF_VENDEDOR = :CPF_VENDEDOR,'
+      '    CODCIDADE_VENDEDOR = :CODCIDADE_VENDEDOR,'
       '    STATUS_VENDEDOR = :STATUS_VENDEDOR'
       'WHERE'
       '    COD_VENDEDOR = :OLD_COD_VENDEDOR'
@@ -348,23 +352,36 @@ object FrmCadOperador: TFrmCadOperador
       'INSERT INTO VENDEDORES('
       '    COD_VENDEDOR,'
       '    NOME_VENDEDOR,'
+      '    SENHA_VENDEDOR,'
+      '    SEXO_VENDEDOR,'
+      '    CPF_VENDEDOR,'
+      '    CODCIDADE_VENDEDOR,'
       '    STATUS_VENDEDOR'
       ')'
       'VALUES('
       '    :COD_VENDEDOR,'
       '    :NOME_VENDEDOR,'
+      '    :SENHA_VENDEDOR,'
+      '    :SEXO_VENDEDOR,'
+      '    :CPF_VENDEDOR,'
+      '    :CODCIDADE_VENDEDOR,'
       '    :STATUS_VENDEDOR'
       ')')
     RefreshSQL.Strings = (
       'SELECT'
       '    V.COD_VENDEDOR,'
       '    V.NOME_VENDEDOR,'
-      '    C.COD_CIDADE,'
+      '    V.SENHA_VENDEDOR,'
+      '    V.SEXO_VENDEDOR,'
+      '    V.CPF_VENDEDOR,'
+      '    V.CODCIDADE_VENDEDOR,'
       '    C.NOME_CIDADE,'
       '    C.UF_CIDADE,'
       '    V.STATUS_VENDEDOR'
       'FROM VENDEDORES V, CIDADES C'
-      'WHERE(  V.CODCIDADE_VENDEDOR = C.COD_CIDADE'
+      
+        'WHERE(  (V.CODCIDADE_VENDEDOR = C.COD_CIDADE) AND (V.COD_VENDEDO' +
+        'R = :COD)'
       '     ) and (     V.COD_VENDEDOR = :OLD_COD_VENDEDOR'
       '     )'
       '    ')
@@ -372,24 +389,34 @@ object FrmCadOperador: TFrmCadOperador
       'SELECT'
       '    V.COD_VENDEDOR,'
       '    V.NOME_VENDEDOR,'
-      '    C.COD_CIDADE,'
+      '    V.SENHA_VENDEDOR,'
+      '    V.SEXO_VENDEDOR,'
+      '    V.CPF_VENDEDOR,'
+      '    V.CODCIDADE_VENDEDOR,'
       '    C.NOME_CIDADE,'
       '    C.UF_CIDADE,'
       '    V.STATUS_VENDEDOR'
       'FROM VENDEDORES V, CIDADES C'
-      'WHERE V.CODCIDADE_VENDEDOR = C.COD_CIDADE')
+      
+        'WHERE (V.CODCIDADE_VENDEDOR = C.COD_CIDADE) AND (V.COD_VENDEDOR ' +
+        '= :COD)')
     Transaction = dm.Trans
     Database = dm.DB
     SQL.Strings = (
       'SELECT'
       '    V.COD_VENDEDOR,'
       '    V.NOME_VENDEDOR,'
-      '    C.COD_CIDADE,'
+      '    V.SENHA_VENDEDOR,'
+      '    V.SEXO_VENDEDOR,'
+      '    V.CPF_VENDEDOR,'
+      '    V.CODCIDADE_VENDEDOR,'
       '    C.NOME_CIDADE,'
       '    C.UF_CIDADE,'
       '    V.STATUS_VENDEDOR'
       'FROM VENDEDORES V, CIDADES C'
-      'WHERE V.CODCIDADE_VENDEDOR = C.COD_CIDADE')
+      
+        'WHERE (V.CODCIDADE_VENDEDOR = C.COD_CIDADE) AND (V.COD_VENDEDOR ' +
+        '= :COD)')
     Left = 279
     Top = 32
     object QryOperadorCOD_VENDEDOR: TFIBIntegerField
@@ -399,9 +426,6 @@ object FrmCadOperador: TFrmCadOperador
       FieldName = 'NOME_VENDEDOR'
       Size = 60
       EmptyStrToNull = True
-    end
-    object QryOperadorCOD_CIDADE: TFIBIntegerField
-      FieldName = 'COD_CIDADE'
     end
     object QryOperadorNOME_CIDADE: TFIBStringField
       FieldName = 'NOME_CIDADE'
@@ -417,6 +441,22 @@ object FrmCadOperador: TFrmCadOperador
       FieldName = 'STATUS_VENDEDOR'
       Size = 1
       EmptyStrToNull = True
+    end
+    object QryOperadorSENHA_VENDEDOR: TFIBStringField
+      FieldName = 'SENHA_VENDEDOR'
+      Size = 10
+      EmptyStrToNull = True
+    end
+    object QryOperadorSEXO_VENDEDOR: TFIBBooleanField
+      FieldName = 'SEXO_VENDEDOR'
+    end
+    object QryOperadorCPF_VENDEDOR: TFIBStringField
+      FieldName = 'CPF_VENDEDOR'
+      Size = 11
+      EmptyStrToNull = True
+    end
+    object QryOperadorCODCIDADE_VENDEDOR: TFIBIntegerField
+      FieldName = 'CODCIDADE_VENDEDOR'
     end
   end
   object DsOperador: TDataSource

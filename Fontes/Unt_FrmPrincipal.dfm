@@ -365,17 +365,12 @@ object Frm_principal: TFrm_principal
     BorderWidth = 1
     ParentBackground = False
     TabOrder = 3
-    object pnSecond: TPanel
-      AlignWithMargins = True
-      Left = 198
+    object pnFirst: TPanel
+      Left = 2
       Top = 2
-      Width = 359
+      Width = 793
       Height = 24
-      Margins.Left = 5
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alLeft
+      Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsSingle
       Color = clWhite
@@ -387,24 +382,6 @@ object Frm_principal: TFrm_principal
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
-    end
-    object pnFirst: TPanel
-      Left = 2
-      Top = 2
-      Width = 191
-      Height = 24
-      Align = alLeft
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      Color = clWhite
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -12
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentBackground = False
-      ParentFont = False
-      TabOrder = 1
       object LbNomeOper: TLabel
         AlignWithMargins = True
         Left = 85
@@ -480,29 +457,6 @@ object Frm_principal: TFrm_principal
         Layout = tlCenter
         ExplicitHeight = 14
       end
-    end
-    object pnThird: TPanel
-      AlignWithMargins = True
-      Left = 562
-      Top = 2
-      Width = 233
-      Height = 24
-      Margins.Left = 5
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alClient
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      Color = clWhite
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -12
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentBackground = False
-      ParentFont = False
-      TabOrder = 2
     end
   end
   object pnRight: TPanel
@@ -595,6 +549,7 @@ object Frm_principal: TFrm_principal
       end
       object rocarOperador1: TMenuItem
         Caption = 'Trocar Operador'
+        OnClick = rocarOperador1Click
       end
     end
     object teste31: TMenuItem
